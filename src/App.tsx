@@ -308,18 +308,6 @@ const SideDrawer = ({
 
             <div className="space-y-4">
                 <span className="text-[10px] font-black uppercase tracking-[0.3em] text-emerald-950/30 dark:text-emerald-100/20 ml-4">Preferências</span>
-                <button
-                  onClick={() => setTheme(theme === 'light' ? 'dark' : 'light')}
-                  className="w-full flex items-center justify-between p-4 rounded-2xl bg-emerald-50/50 dark:bg-emerald-900/20 border border-emerald-50 dark:border-emerald-800"
-                >
-                  <div className="flex items-center gap-4">
-                    <div className="w-10 h-10 rounded-xl bg-white dark:bg-emerald-800 flex items-center justify-center text-emerald-600 dark:text-emerald-400 shadow-sm">
-                      {theme === 'light' ? <Moon size={20} /> : <Sun size={20} />}
-                    </div>
-                    <span className="font-black uppercase text-xs tracking-widest text-emerald-950 dark:text-emerald-50">{theme === 'light' ? 'Modo Escuro' : 'Modo Claro'}</span>
-                  </div>
-                </button>
-
                 {!pushEnabled && (
                   <button
                     onClick={onEnablePush}
@@ -353,6 +341,7 @@ const SideDrawer = ({
 // --- Welcome Screen (Splash) ---
 
 const CitySelectorModal = ({ isOpen, onClose, onSelect, currentCity }: { isOpen: boolean, onClose: () => void, onSelect: (city: string) => void, currentCity: string }) => {
+  const navigate = useNavigate();
   if (!isOpen) return null;
 
   return (
@@ -403,6 +392,17 @@ const CitySelectorModal = ({ isOpen, onClose, onSelect, currentCity }: { isOpen:
             </button>
           ))}
         </div>
+
+        <button 
+          onClick={() => {
+            onClose();
+            navigate('/planos');
+          }}
+          className="mt-6 w-full py-4 bg-amber-500 text-white rounded-2xl font-black uppercase text-[10px] tracking-widest shadow-lg shadow-amber-500/20 active:scale-95 transition-all flex items-center justify-center gap-2"
+        >
+          <Star size={14} className="fill-white/20" />
+          Seja um Parceiro
+        </button>
       </MotionDiv>
     </div>
   );
@@ -410,6 +410,7 @@ const CitySelectorModal = ({ isOpen, onClose, onSelect, currentCity }: { isOpen:
 
 const WelcomeScreen = ({ onComplete, selectedCity, onCitySelect }: { onComplete: () => void, selectedCity: string, onCitySelect: (city: string) => void }) => {
   const [step, setStep] = useState(selectedCity ? 'splash' : 'select');
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (step === 'splash') {
@@ -476,6 +477,17 @@ const WelcomeScreen = ({ onComplete, selectedCity, onCitySelect }: { onComplete:
               ))}
             </div>
             <p className="text-white/20 text-[9px] font-bold uppercase tracking-widest mt-6">Deslize para ver mais cidades</p>
+            
+            <button 
+              onClick={() => {
+                onComplete();
+                navigate('/planos');
+              }}
+              className="mt-8 w-full py-5 bg-amber-500 text-white rounded-2xl font-black uppercase text-xs tracking-widest shadow-xl shadow-amber-500/20 active:scale-95 transition-all flex items-center justify-center gap-3"
+            >
+              <Star size={18} className="fill-white/20" />
+              Seja um Parceiro
+            </button>
           </MotionDiv>
         ) : (
           <>
@@ -585,7 +597,7 @@ const BannerCarousel = ({ banners }: { banners: Banner[] }) => {
   );
 };
 
-const HomePage = ({ companies, alerts, banners, favorites, toggleFavorite, currentCity }: any) => {
+const HomePage = ({ companies, alerts, banners, favorites, toggleFavorite, currentCity, onChangeCity }: any) => {
   const [search, setSearch] = useState('');
   const [activeCategory, setActiveCategory] = useState('Todas');
   const navigate = useNavigate();
@@ -665,6 +677,25 @@ const HomePage = ({ companies, alerts, banners, favorites, toggleFavorite, curre
                     <div className="text-left">
                       <span className="block text-[10px] font-black uppercase tracking-[0.2em] text-amber-500/60 leading-none mb-1">Empresas</span>
                       <span className="block text-sm font-black uppercase tracking-widest text-amber-600 dark:text-amber-400">Seja um Parceiro</span>
+                    </div>
+                  </button>
+                </MotionDiv>
+
+                <MotionDiv
+                  animate={{ scale: [1, 1.02, 1] }}
+                  transition={{ duration: 2, repeat: Infinity, ease: "easeInOut", delay: 1.5 }}
+                  className="w-full md:w-auto"
+                >
+                  <button 
+                    onClick={onChangeCity}
+                    className="group relative flex items-center gap-4 px-8 py-5 bg-emerald-500/10 hover:bg-emerald-500/20 border-2 border-emerald-500/20 rounded-3xl transition-all active:scale-95 shadow-lg shadow-emerald-500/5 w-full md:w-auto overflow-hidden"
+                  >
+                    <div className="relative">
+                      <MapPinned className="text-emerald-500 group-hover:scale-110 transition-transform" size={28} />
+                    </div>
+                    <div className="text-left">
+                      <span className="block text-[10px] font-black uppercase tracking-[0.2em] text-emerald-500/60 leading-none mb-1">Localização</span>
+                      <span className="block text-sm font-black uppercase tracking-widest text-emerald-600 dark:text-emerald-400">Alterar Cidade</span>
                     </div>
                   </button>
                 </MotionDiv>
@@ -2138,7 +2169,6 @@ const App = () => {
                   <HeartPulse size={16} /> Plantão
                 </Link>
              </div>
-             <ThemeToggle theme={theme} setTheme={setTheme} />
              <Link to={user ? "/admin" : "/login"} className="w-12 h-12 bg-white/5 border border-white/10 rounded-2xl text-emerald-100 flex items-center justify-center hover:bg-emerald-600 hover:text-white transition-all active:scale-95 shadow-sm">
                <User size={20} />
              </Link>
