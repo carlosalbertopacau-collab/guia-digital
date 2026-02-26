@@ -528,9 +528,11 @@ const WelcomeScreen = ({ onComplete, selectedCity, onCitySelect }: { onComplete:
 
 // --- Page Components ---
 
-const BannerCarousel = ({ banners }: { banners: Banner[] }) => {
+const BannerCarousel = ({ banners, currentCity }: { banners: Banner[], currentCity: string }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
-  const activeBanners = banners.filter(b => b.active).sort((a, b) => a.order - b.order);
+  const activeBanners = banners.filter(b => 
+    b.active && (b.city === currentCity || b.city === 'all')
+  ).sort((a, b) => a.order - b.order);
 
   useEffect(() => {
     if (activeBanners.length <= 1) return;
@@ -618,7 +620,7 @@ const HomePage = ({ companies, alerts, banners, favorites, toggleFavorite, curre
   return (
     <MotionDiv {...fadeUp} className="max-w-7xl mx-auto px-5 md:px-6 py-8 md:py-20">
       <AnimatePresence>
-        {!isSearching && <BannerCarousel banners={banners} />}
+        {!isSearching && <BannerCarousel banners={banners} currentCity={currentCity} />}
         {!isSearching && alerts.filter((a:any) => a.active).map((alert:any) => (
           <MotionDiv key={alert.id} initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} exit={{ opacity: 0, height: 0 }} className="mb-6 md:mb-8 overflow-hidden">
             <div className="bg-emerald-950 text-white p-5 md:p-6 rounded-2xl md:rounded-[2rem] flex items-center gap-4 shadow-xl border border-emerald-800">
@@ -1507,16 +1509,16 @@ const AdminModal = ({ type, item, onClose, onSave, currentCity }: { type: 'compa
 
           <div className="space-y-4">
             <label className="text-[10px] font-black uppercase tracking-widest text-emerald-950/40 dark:text-emerald-100/20 ml-4">Imagem / Logo</label>
-            <div className="flex items-center gap-6">
-              <div className="w-24 h-24 bg-emerald-50 dark:bg-emerald-950 rounded-2xl border-2 border-dashed border-emerald-200 dark:border-emerald-800 flex items-center justify-center overflow-hidden shrink-0">
-                {logo ? <img src={logo} alt="Preview" className="w-full h-full object-cover" /> : <ImageIcon className="text-emerald-200" size={32} />}
+            <div className="flex flex-col sm:flex-row items-center gap-6">
+              <div className="w-full sm:w-32 h-48 sm:h-32 bg-emerald-50 dark:bg-emerald-950 rounded-2xl border-2 border-dashed border-emerald-200 dark:border-emerald-800 flex items-center justify-center overflow-hidden shrink-0">
+                {logo ? <img src={logo} alt="Preview" className="w-full h-full object-contain" /> : <ImageIcon className="text-emerald-200" size={32} />}
               </div>
-              <div className="flex-grow">
+              <div className="flex-grow w-full">
                 <input type="file" accept="image/*" onChange={handleFileChange} className="hidden" id="admin-file-upload" />
-                <label htmlFor="admin-file-upload" className="inline-flex items-center gap-3 px-6 py-4 bg-emerald-50 dark:bg-emerald-800 text-emerald-600 dark:text-emerald-400 rounded-2xl font-black uppercase text-[10px] tracking-widest cursor-pointer hover:bg-emerald-100 transition-all">
+                <label htmlFor="admin-file-upload" className="flex items-center justify-center sm:inline-flex gap-3 px-6 py-4 bg-emerald-50 dark:bg-emerald-800 text-emerald-600 dark:text-emerald-400 rounded-2xl font-black uppercase text-[10px] tracking-widest cursor-pointer hover:bg-emerald-100 transition-all w-full sm:w-auto">
                   <Upload size={18} /> Selecionar Imagem
                 </label>
-                <p className="text-[9px] text-emerald-900/40 dark:text-emerald-100/20 mt-2 font-bold uppercase tracking-widest">Formatos aceitos: JPG, PNG, WEBP</p>
+                <p className="text-[9px] text-emerald-900/40 dark:text-emerald-100/20 mt-2 font-bold uppercase tracking-widest text-center sm:text-left">Formatos aceitos: JPG, PNG, WEBP</p>
               </div>
             </div>
           </div>
@@ -2093,7 +2095,7 @@ const App = () => {
       setUser(session?.user ?? null);
     });
     return () => subscription.unsubscribe();
-  }, []);
+  }, [selectedCity]);
 
   const isAdminPath = location.pathname.startsWith('/admin');
   const isLoginPage = location.pathname === '/login';
