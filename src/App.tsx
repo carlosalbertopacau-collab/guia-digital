@@ -599,7 +599,7 @@ const BannerCarousel = ({ banners, currentCity }: { banners: Banner[], currentCi
   );
 };
 
-const HomePage = ({ companies, alerts, banners, favorites, toggleFavorite, currentCity, onChangeCity }: any) => {
+const HomePage = ({ companies, alerts, banners, favorites, toggleFavorite, currentCity, onChangeCity, isAdmin, onEditAlert, onDeleteAlert }: any) => {
   const [search, setSearch] = useState('');
   const [activeCategory, setActiveCategory] = useState('Todas');
   const navigate = useNavigate();
@@ -621,16 +621,44 @@ const HomePage = ({ companies, alerts, banners, favorites, toggleFavorite, curre
     <MotionDiv {...fadeUp} className="max-w-7xl mx-auto px-5 md:px-6 py-8 md:py-20">
       <AnimatePresence>
         {!isSearching && <BannerCarousel banners={banners} currentCity={currentCity} />}
-        {!isSearching && alerts.filter((a:any) => a.active).map((alert:any) => (
+        {!isSearching && alerts.filter((a:any) => a.active || isAdmin).map((alert:any) => (
           <MotionDiv key={alert.id} initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} exit={{ opacity: 0, height: 0 }} className="mb-6 md:mb-8 overflow-hidden">
-            <div className="bg-emerald-950 text-white p-5 md:p-6 rounded-2xl md:rounded-[2rem] flex items-center gap-4 shadow-xl border border-emerald-800">
-              <div className="w-10 h-10 rounded-full bg-emerald-500/20 flex items-center justify-center text-emerald-400 shrink-0">
-                <Zap size={20} />
+            <div className={`p-5 md:p-6 rounded-2xl md:rounded-[2rem] flex items-center justify-between gap-4 shadow-xl border ${alert.active ? 'bg-emerald-950 text-white border-emerald-800' : 'bg-red-500/10 text-red-500 border-red-500/20'}`}>
+              <div className="flex items-center gap-4 min-w-0">
+                <div className={`w-10 h-10 rounded-full flex items-center justify-center shrink-0 ${alert.active ? 'bg-emerald-500/20 text-emerald-400' : 'bg-red-500/20 text-red-500'}`}>
+                  <Zap size={20} />
+                </div>
+                <div className="text-left min-w-0">
+                  <h4 className="text-[10px] md:text-xs font-black uppercase tracking-widest truncate">{alert.title}</h4>
+                  <p className={`text-[9px] md:text-[10px] line-clamp-1 ${alert.active ? 'text-emerald-100/40' : 'text-red-500/60'}`}>{alert.description}</p>
+                </div>
               </div>
-              <div className="text-left min-w-0">
-                <h4 className="text-[10px] md:text-xs font-black uppercase tracking-widest truncate">{alert.title}</h4>
-                <p className="text-[9px] md:text-[10px] text-emerald-100/40 line-clamp-1">{alert.description}</p>
-              </div>
+              
+              {isAdmin && (
+                <div className="flex items-center gap-2 shrink-0">
+                  <button 
+                    onClick={() => onEditAlert(alert)}
+                    className="p-2 bg-white/10 hover:bg-white/20 rounded-lg transition-all text-emerald-400"
+                    title="Editar Alerta"
+                  >
+                    <Edit2 size={14} />
+                  </button>
+                  <button 
+                    onClick={() => onDeleteAlert(alert.id)}
+                    className="p-2 bg-red-500/10 hover:bg-red-500/20 rounded-lg transition-all text-red-500"
+                    title="Excluir Alerta"
+                  >
+                    <Trash2 size={14} />
+                  </button>
+                  <button 
+                    onClick={() => navigate('/admin')}
+                    className="p-2 bg-white/10 hover:bg-white/20 rounded-lg transition-all"
+                    title="Gerenciar no Painel"
+                  >
+                    <Settings size={14} />
+                  </button>
+                </div>
+              )}
             </div>
           </MotionDiv>
         ))}
@@ -1356,12 +1384,13 @@ const AdminModal = ({ type, item, onClose, onSave, currentCity }: { type: 'compa
         data = {
           title: formData.get('title'),
           description: formData.get('description'),
-          image_url: logo,
           link: formData.get('link'),
           active: formData.get('active') === 'on',
           city: formData.get('city') || currentCity
         };
       }
+
+      console.log(`Salvando em ${table}:`, data);
 
       let error;
       if (item?.id) {
@@ -1370,10 +1399,14 @@ const AdminModal = ({ type, item, onClose, onSave, currentCity }: { type: 'compa
         ({ error } = await supabase.from(table).insert([data]));
       }
 
-      if (error) throw error;
+      if (error) {
+        console.error(`Erro ao salvar em ${table}:`, error);
+        throw error;
+      }
       onSave();
     } catch (err: any) {
-      alert('Erro ao salvar: ' + err.message);
+      console.error('Erro completo:', err);
+      alert('Erro ao salvar: ' + (err.message || 'Erro desconhecido'));
     } finally {
       setLoading(false);
     }
@@ -1384,12 +1417,16 @@ const AdminModal = ({ type, item, onClose, onSave, currentCity }: { type: 'compa
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      className="fixed inset-0 z-[300] flex items-center justify-center p-6 bg-emerald-950/40 backdrop-blur-md"
+      onClick={(e: React.MouseEvent) => {
+        if (e.target === e.currentTarget) onClose();
+      }}
+      className="fixed inset-0 z-[300] flex items-center justify-center p-6 bg-emerald-950/40 backdrop-blur-md cursor-pointer"
     >
       <MotionDiv
         initial={{ scale: 0.9, opacity: 0, y: 20 }}
         animate={{ scale: 1, opacity: 1, y: 0 }}
-        className="bg-white dark:bg-emerald-900 w-full max-w-2xl max-h-[90vh] overflow-y-auto rounded-[3rem] shadow-2xl border border-white/10 p-8 md:p-12 relative"
+        onClick={(e: React.MouseEvent) => e.stopPropagation()}
+        className="bg-white dark:bg-emerald-900 w-full max-w-2xl max-h-[90vh] overflow-y-auto rounded-[3rem] shadow-2xl border border-white/10 p-8 md:p-12 relative cursor-default"
       >
         <button onClick={onClose} className="absolute top-8 right-8 p-3 bg-emerald-50 dark:bg-emerald-800 rounded-2xl text-emerald-600 dark:text-emerald-400 hover:scale-110 active:scale-90 transition-all">
           <X size={24} />
@@ -1507,21 +1544,23 @@ const AdminModal = ({ type, item, onClose, onSave, currentCity }: { type: 'compa
             </>
           )}
 
-          <div className="space-y-4">
-            <label className="text-[10px] font-black uppercase tracking-widest text-emerald-950/40 dark:text-emerald-100/20 ml-4">Imagem / Logo</label>
-            <div className="flex flex-col sm:flex-row items-center gap-6">
-              <div className="w-full sm:w-32 h-48 sm:h-32 bg-emerald-50 dark:bg-emerald-950 rounded-2xl border-2 border-dashed border-emerald-200 dark:border-emerald-800 flex items-center justify-center overflow-hidden shrink-0">
-                {logo ? <img src={logo} alt="Preview" className="w-full h-full object-contain" /> : <ImageIcon className="text-emerald-200" size={32} />}
-              </div>
-              <div className="flex-grow w-full">
-                <input type="file" accept="image/*" onChange={handleFileChange} className="hidden" id="admin-file-upload" />
-                <label htmlFor="admin-file-upload" className="flex items-center justify-center sm:inline-flex gap-3 px-6 py-4 bg-emerald-50 dark:bg-emerald-800 text-emerald-600 dark:text-emerald-400 rounded-2xl font-black uppercase text-[10px] tracking-widest cursor-pointer hover:bg-emerald-100 transition-all w-full sm:w-auto">
-                  <Upload size={18} /> Selecionar Imagem
-                </label>
-                <p className="text-[9px] text-emerald-900/40 dark:text-emerald-100/20 mt-2 font-bold uppercase tracking-widest text-center sm:text-left">Formatos aceitos: JPG, PNG, WEBP</p>
+          {type !== 'alert' && (
+            <div className="space-y-4">
+              <label className="text-[10px] font-black uppercase tracking-widest text-emerald-950/40 dark:text-emerald-100/20 ml-4">Imagem / Logo</label>
+              <div className="flex flex-col sm:flex-row items-center gap-6">
+                <div className="w-full sm:w-32 h-48 sm:h-32 bg-emerald-50 dark:bg-emerald-950 rounded-2xl border-2 border-dashed border-emerald-200 dark:border-emerald-800 flex items-center justify-center overflow-hidden shrink-0">
+                  {logo ? <img src={logo} alt="Preview" className="w-full h-full object-contain" /> : <ImageIcon className="text-emerald-200" size={32} />}
+                </div>
+                <div className="flex-grow w-full">
+                  <input type="file" accept="image/*" onChange={handleFileChange} className="hidden" id="admin-file-upload" />
+                  <label htmlFor="admin-file-upload" className="flex items-center justify-center sm:inline-flex gap-3 px-6 py-4 bg-emerald-50 dark:bg-emerald-800 text-emerald-600 dark:text-emerald-400 rounded-2xl font-black uppercase text-[10px] tracking-widest cursor-pointer hover:bg-emerald-100 transition-all w-full sm:w-auto">
+                    <Upload size={18} /> Selecionar Imagem
+                  </label>
+                  <p className="text-[9px] text-emerald-900/40 dark:text-emerald-100/20 mt-2 font-bold uppercase tracking-widest text-center sm:text-left">Formatos aceitos: JPG, PNG, WEBP</p>
+                </div>
               </div>
             </div>
-          </div>
+          )}
 
           <button 
             type="submit" 
@@ -1537,37 +1576,14 @@ const AdminModal = ({ type, item, onClose, onSave, currentCity }: { type: 'compa
   );
 };
 
-const AdminDashboard = ({ companies, alerts, settings, notifications, onCall, banners, onRefresh, isRefreshing }: any) => {
+const AdminDashboard = ({ companies, alerts, settings, notifications, onCall, banners, onRefresh, isRefreshing, openModal, handleDelete, isModalOpen, setIsModalOpen, modalType, editingItem }: any) => {
   const [activeTab, setActiveTab] = useState('companies');
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [modalType, setModalType] = useState<'company' | 'banner' | 'alert' | null>(null);
-  const [editingItem, setEditingItem] = useState<any>(null);
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
   const handleLogout = async () => {
     await supabase.auth.signOut();
     navigate('/login');
-  };
-
-  const openModal = (type: 'company' | 'banner' | 'alert', item: any = null) => {
-    setModalType(type);
-    setEditingItem(item);
-    setIsModalOpen(true);
-  };
-
-  const handleDelete = async (table: string, id: string) => {
-    if (!confirm('Tem certeza que deseja excluir este item?')) return;
-    setLoading(true);
-    try {
-      const { error } = await supabase.from(table).delete().eq('id', id);
-      if (error) throw error;
-      onRefresh();
-    } catch (err: any) {
-      alert('Erro ao excluir: ' + err.message);
-    } finally {
-      setLoading(false);
-    }
   };
 
   const handleSaveOnCall = async (e: React.FormEvent) => {
@@ -1642,17 +1658,6 @@ const AdminDashboard = ({ companies, alerts, settings, notifications, onCall, ba
 
   return (
     <div className="max-w-7xl mx-auto px-6 py-12 md:py-20">
-      <AnimatePresence>
-        {isModalOpen && (
-          <AdminModal 
-            type={modalType!} 
-            item={editingItem} 
-            onClose={() => setIsModalOpen(false)} 
-            onSave={() => { setIsModalOpen(false); onRefresh(); }}
-            currentCity={settings.city}
-          />
-        )}
-      </AnimatePresence>
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-8 mb-12 md:mb-20">
         <div className="text-left">
           <h1 className="text-4xl md:text-6xl font-black text-emerald-950 dark:text-emerald-50 uppercase tracking-tighter leading-none mb-4">Painel <br /><span className="text-emerald-600">Administrativo</span></h1>
@@ -2027,6 +2032,30 @@ const App = () => {
     );
   };
 
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [modalType, setModalType] = useState<'company' | 'banner' | 'alert' | null>(null);
+  const [editingItem, setEditingItem] = useState<any>(null);
+
+  const openModal = (type: 'company' | 'banner' | 'alert', item: any = null) => {
+    setModalType(type);
+    setEditingItem(item);
+    setIsModalOpen(true);
+  };
+
+  const handleDelete = async (table: string, id: string) => {
+    if (!confirm('Tem certeza que deseja excluir este item?')) return;
+    setIsRefreshing(true);
+    try {
+      const { error } = await supabase.from(table).delete().eq('id', id);
+      if (error) throw error;
+      fetchData();
+    } catch (err: any) {
+      alert('Erro ao excluir: ' + err.message);
+    } finally {
+      setIsRefreshing(false);
+    }
+  };
+
   const location = useLocation();
   const navigate = useNavigate();
 
@@ -2055,8 +2084,8 @@ const App = () => {
       if (results[1].status === 'fulfilled' && results[1].value.data) {
         setAlerts(results[1].value.data.map((a:any) => ({
           ...a, 
-          imageUrl: a.image_url,
-          createdAt: new Date(a.created_at).getTime()
+          imageUrl: a.image_url || a.imageUrl,
+          createdAt: new Date(a.created_at || a.createdAt).getTime()
         })));
       }
       if (results[2].status === 'fulfilled' && results[2].value.data) {
@@ -2074,9 +2103,9 @@ const App = () => {
       if (results[5].status === 'fulfilled' && results[5].value.data) {
         setBanners(results[5].value.data.map((b:any) => ({
           ...b,
-          imageUrl: b.image_url,
-          order: b.order_index,
-          createdAt: new Date(b.created_at).getTime()
+          imageUrl: b.image_url || b.imageUrl,
+          order: b.order_index ?? b.order ?? 0,
+          createdAt: new Date(b.created_at || b.createdAt).getTime()
         })));
       }
       
@@ -2112,6 +2141,18 @@ const App = () => {
             onComplete={() => setShowWelcome(false)} 
             selectedCity={selectedCity}
             onCitySelect={setSelectedCity}
+          />
+        )}
+      </AnimatePresence>
+
+      <AnimatePresence>
+        {isModalOpen && (
+          <AdminModal 
+            type={modalType!} 
+            item={editingItem} 
+            onClose={() => setIsModalOpen(false)} 
+            onSave={() => { setIsModalOpen(false); fetchData(); }}
+            currentCity={selectedCity}
           />
         )}
       </AnimatePresence>
@@ -2199,14 +2240,14 @@ const App = () => {
         {!showWelcome && (
           <AnimatePresence mode="wait">
             <Routes location={location} key={location.pathname}>
-              <Route path="/" element={<HomePage companies={companies} alerts={alerts} banners={banners} favorites={favorites} toggleFavorite={toggleFavorite} currentCity={selectedCity} onChangeCity={() => setIsCityModalOpen(true)} />} />
+              <Route path="/" element={<HomePage companies={companies} alerts={alerts} banners={banners} favorites={favorites} toggleFavorite={toggleFavorite} currentCity={selectedCity} onChangeCity={() => setIsCityModalOpen(true)} isAdmin={!!user} onEditAlert={(item: any) => openModal('alert', item)} onDeleteAlert={(id: string) => handleDelete('alerts', id)} />} />
               <Route path="/empresa/:id" element={<DetailsPage companies={companies} favorites={favorites} toggleFavorite={toggleFavorite} />} />
               <Route path="/favoritos" element={<FavoritesPage companies={companies} favorites={favorites} toggleFavorite={toggleFavorite} />} />
               <Route path="/plantao" element={<PlantaoPage onCall={onCall} />} />
               <Route path="/planos" element={<PlansPage adminPhone={settings.phone} />} />
               <Route path="/sobre" element={<AboutPage />} />
               <Route path="/login" element={<LoginPage />} />
-              <Route path="/admin" element={user ? <AdminDashboard companies={companies} alerts={alerts} settings={settings} notifications={notifications} onCall={onCall} banners={banners} onRefresh={fetchData} isRefreshing={isRefreshing} /> : <Navigate to="/login" />} />
+              <Route path="/admin" element={user ? <AdminDashboard companies={companies} alerts={alerts} settings={settings} notifications={notifications} onCall={onCall} banners={banners} onRefresh={fetchData} isRefreshing={isRefreshing} openModal={openModal} handleDelete={handleDelete} isModalOpen={isModalOpen} setIsModalOpen={setIsModalOpen} modalType={modalType} editingItem={editingItem} /> : <Navigate to="/login" />} />
               <Route path="*" element={<Navigate to="/" replace />} />
             </Routes>
           </AnimatePresence>
