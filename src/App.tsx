@@ -223,7 +223,7 @@ const SideDrawer = ({
     { icon: Heart, label: `Favoritos (${favoritesCount})`, path: '/favoritos' },
     { icon: Award, label: 'Seja um Parceiro', path: '/planos' },
     { icon: HeartPulse, label: 'Farmácia de Plantão', path: '/plantao' },
-    { icon: Info, label: 'Sobre o Projeto', path: '/sobre' },
+    { icon: Info, label: 'Quem Somos', path: '/sobre' },
     { icon: Settings, label: 'Painel Admin', path: user ? '/admin' : '/login' },
   ];
 
@@ -858,12 +858,37 @@ const DetailsPage = ({ companies, favorites, toggleFavorite }: any) => {
 
               <div className="space-y-4">
                 <h3 className="text-[10px] font-black uppercase tracking-widest text-emerald-950/30 dark:text-emerald-100/20 mb-4">Localização</h3>
-                <div className="flex items-start gap-4 p-5 bg-emerald-50/50 dark:bg-emerald-950/50 rounded-2xl border border-emerald-50 dark:border-emerald-800">
+                <div className="flex items-start gap-4 p-5 bg-emerald-50/50 dark:bg-emerald-950/50 rounded-2xl border border-emerald-50 dark:border-emerald-800 mb-4">
                   <MapPin className="text-emerald-500 shrink-0" size={20} />
                   <p className="text-xs font-bold text-emerald-900 dark:text-emerald-100 uppercase tracking-wide leading-relaxed">
                     {company.address || 'Endereço não informado'}
                   </p>
                 </div>
+
+                {company.address && (
+                  <div className="space-y-4">
+                    <div className="w-full aspect-video md:aspect-[16/9] rounded-3xl overflow-hidden border-4 border-white dark:border-emerald-800 shadow-2xl relative group">
+                      <iframe
+                        width="100%"
+                        height="100%"
+                        style={{ border: 0 }}
+                        loading="lazy"
+                        allowFullScreen
+                        referrerPolicy="no-referrer-when-downgrade"
+                        src={`https://maps.google.com/maps?q=${encodeURIComponent(company.address + ', ' + (SUPPORTED_CITIES.find(c => c.id === company.city)?.name || ''))}&t=&z=15&ie=UTF8&iwloc=&output=embed`}
+                        className="grayscale-[0.2] contrast-[1.1] brightness-[1.05]"
+                      ></iframe>
+                    </div>
+                    <a 
+                      href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(company.address + ', ' + (SUPPORTED_CITIES.find(c => c.id === company.city)?.name || ''))}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-center justify-center gap-2 w-full py-4 bg-emerald-50 dark:bg-emerald-800/50 text-emerald-600 dark:text-emerald-400 rounded-2xl font-black uppercase text-[10px] tracking-widest hover:bg-emerald-100 transition-all"
+                    >
+                      <MapPinned size={16} /> Abrir no Google Maps
+                    </a>
+                  </div>
+                )}
               </div>
             </div>
 
@@ -1085,23 +1110,18 @@ const PlansPage = ({ adminPhone }: { adminPhone: string }) => {
   const plans = [
     {
       name: 'Essencial',
-      price: 'Grátis',
       features: ['Nome da Empresa', 'Telefone de Contato', 'Categoria no Guia', 'Endereço Básico'],
       highlight: false,
       icon: Zap
     },
     {
       name: 'Premium',
-      price: 'R$ 29,90',
-      period: '/mês',
       features: ['Logomarca em Destaque', 'Link Direto WhatsApp', 'Redes Sociais', 'Descrição Completa', 'Prioridade na Busca'],
       highlight: true,
       icon: Gem
     },
     {
       name: 'Elite',
-      price: 'R$ 49,90',
-      period: '/mês',
       features: ['Tudo do Premium', 'Banner Rotativo Topo', 'Notificações Push', 'Suporte Prioritário', 'Estatísticas de Cliques'],
       highlight: false,
       icon: Rocket
@@ -1131,11 +1151,7 @@ const PlansPage = ({ adminPhone }: { adminPhone: string }) => {
               <plan.icon size={32} />
             </div>
 
-            <h3 className="text-2xl font-black uppercase tracking-tight mb-2">{plan.name}</h3>
-            <div className="flex items-baseline gap-1 mb-10">
-              <span className="text-4xl font-black">{plan.price}</span>
-              {plan.period && <span className="text-xs font-bold opacity-40 uppercase tracking-widest">{plan.period}</span>}
-            </div>
+            <h3 className="text-2xl font-black uppercase tracking-tight mb-10">{plan.name}</h3>
 
             <div className="space-y-4 mb-12 flex-1">
               {plan.features.map((feature) => (
@@ -1183,7 +1199,7 @@ const AboutPage = () => {
     <MotionDiv {...fadeUp} className="max-w-4xl mx-auto px-6 py-12 md:py-20">
       <div className="text-center mb-20">
         <AppLogo size="lg" animate />
-        <h1 className="text-4xl md:text-7xl font-black text-emerald-950 dark:text-emerald-50 uppercase tracking-tighter leading-none mt-10 mb-6">Sobre o <br /><span className="text-emerald-600">Projeto</span></h1>
+        <h1 className="text-4xl md:text-7xl font-black text-emerald-950 dark:text-emerald-50 uppercase tracking-tighter leading-none mt-10 mb-6">Quem <br /><span className="text-emerald-600">Somos</span></h1>
         <p className="text-xs font-black uppercase tracking-[0.4em] text-emerald-950/30 dark:text-emerald-100/20">Conectando pessoas e negócios locais</p>
       </div>
 
@@ -2204,6 +2220,9 @@ const App = () => {
           </div>
           
           <div className="flex items-center gap-2">
+             <div className="hidden lg:flex gap-6 mr-8">
+                <Link to="/sobre" className="text-emerald-100/60 hover:text-white font-black uppercase text-[10px] tracking-widest transition-colors">Quem Somos</Link>
+             </div>
              <div className="hidden md:flex gap-3 mr-4">
                 <Link to="/planos" className="flex items-center gap-2 bg-amber-500/10 text-amber-400 px-6 py-3.5 rounded-2xl font-black uppercase text-[10px] tracking-widest border border-amber-500/20 active:scale-95 transition-all">
                   <Star size={16} className="fill-amber-400/20" /> Seja Parceiro
@@ -2269,7 +2288,13 @@ const App = () => {
               </Link>
             </div>
 
-            <div className="space-y-2 pt-6 w-full border-t border-white/5">
+            <div className="flex flex-wrap justify-center gap-x-8 gap-y-4 pt-6 w-full border-t border-white/5">
+              <Link to="/sobre" className="text-emerald-100/40 text-[10px] font-black uppercase tracking-widest hover:text-emerald-400 transition-colors">Quem Somos</Link>
+              <Link to="/planos" className="text-emerald-100/40 text-[10px] font-black uppercase tracking-widest hover:text-emerald-400 transition-colors">Anuncie</Link>
+              <Link to="/plantao" className="text-emerald-100/40 text-[10px] font-black uppercase tracking-widest hover:text-emerald-400 transition-colors">Plantão</Link>
+            </div>
+
+            <div className="space-y-2 pt-4 w-full">
               <p className="text-emerald-100/40 text-[8px] font-bold uppercase tracking-[0.4em] px-4 leading-relaxed">{settings.address}</p>
               <p className="text-emerald-100/20 text-[7px] font-bold uppercase tracking-[0.3em]">© 2024 Guia BC • Bernardino de Campos, SP</p>
             </div>
