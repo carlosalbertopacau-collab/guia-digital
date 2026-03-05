@@ -12,9 +12,13 @@ import {
   Bell, Megaphone, Upload, Image as ImageIcon, MapPinned, ChevronLeft, AlertTriangle,
   RefreshCw, Menu as MenuIcon, Smartphone, Star,
   Award, TrendingUp, Gem, Check, Rocket, ChevronRight, Share, Heart, ChevronDown,
-  Copy, CheckCircle
+  Copy, CheckCircle, LayoutDashboard, BarChart3, Users, MousePointer2
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { 
+  BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, 
+  LineChart, Line, AreaChart, Area, PieChart, Pie, Cell 
+} from 'recharts';
 
 import { Company, Alert, OnCallDuty, AdminContact, Notification as AppNotification, Banner } from './types';
 import { INITIAL_COMPANIES, INITIAL_OFFERS, INITIAL_ON_CALL, INITIAL_ADMIN_CONTACT, INITIAL_BANNERS } from './constants';
@@ -100,6 +104,28 @@ const subscribeUserToPush = async () => {
 const Skeleton = ({ className }: { className?: string }) => (
   <div className={`animate-pulse bg-emerald-100/50 rounded-2xl ${className}`} />
 );
+
+const QuickFilters = ({ activeCategory, onSelectCategory, categories }: any) => {
+  return (
+    <div className="flex gap-2 overflow-x-auto no-scrollbar pb-4 mb-8">
+      <button
+        onClick={() => onSelectCategory(null)}
+        className={`px-6 py-3 rounded-2xl font-black uppercase text-[10px] tracking-widest transition-all whitespace-nowrap active:scale-95 ${!activeCategory ? 'bg-emerald-600 text-white shadow-lg shadow-emerald-600/20' : 'bg-white border border-emerald-50 text-emerald-950/40 hover:border-emerald-200'}`}
+      >
+        Todos
+      </button>
+      {categories.map((cat: string) => (
+        <button
+          key={cat}
+          onClick={() => onSelectCategory(cat)}
+          className={`px-6 py-3 rounded-2xl font-black uppercase text-[10px] tracking-widest transition-all whitespace-nowrap active:scale-95 ${activeCategory === cat ? 'bg-emerald-600 text-white shadow-lg shadow-emerald-600/20' : 'bg-white border border-emerald-50 text-emerald-950/40 hover:border-emerald-200'}`}
+        >
+          {cat}
+        </button>
+      ))}
+    </div>
+  );
+};
 
 const Toast = ({ message, type = 'success', onClose }: { message: string, type?: 'success' | 'error', onClose: () => void }) => {
   useEffect(() => {
@@ -788,15 +814,21 @@ const BannerCarousel = ({ banners, currentCity }: { banners: Banner[], currentCi
 const HomePage = ({ companies, alerts, banners, favorites, toggleFavorite, currentCity, onChangeCity, isAdmin, onEditAlert, onDeleteAlert, onOpenFreeRegistration, onShare, isRefreshing }: any) => {
   const [search, setSearch] = useState('');
   const [searchTerm, setSearchTerm] = useState('');
+  const [activeCategory, setActiveCategory] = useState<string | null>(null);
   const navigate = useNavigate();
   const cityName = SUPPORTED_CITIES.find(c => c.id === currentCity)?.name || 'Guia Digital';
+
+  const categories = useMemo(() => {
+    return Array.from(new Set(companies.map((c: any) => c.category))).sort();
+  }, [companies]);
 
   const filtered = useMemo(() => {
     return companies.filter((c:any) => {
       const matchSearch = c.name.toLowerCase().includes(searchTerm.toLowerCase()) || c.category.toLowerCase().includes(searchTerm.toLowerCase());
-      return matchSearch;
+      const matchCategory = !activeCategory || c.category === activeCategory;
+      return matchSearch && matchCategory;
     });
-  }, [companies, searchTerm]);
+  }, [companies, searchTerm, activeCategory]);
 
   const handleSearch = () => {
     setSearchTerm(search);
@@ -982,15 +1014,24 @@ const HomePage = ({ companies, alerts, banners, favorites, toggleFavorite, curre
         </div>
       </div>
 
+      <QuickFilters 
+        activeCategory={activeCategory} 
+        onSelectCategory={setActiveCategory} 
+        categories={categories} 
+      />
+
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 mb-24 md:mb-32">
         {isRefreshing && filtered.length === 0 ? (
           Array.from({ length: 8 }).map((_, i) => (
-            <div key={i} className="bg-white dark:bg-emerald-900/20 p-6 rounded-[2.5rem] border border-emerald-50 dark:border-emerald-800 space-y-6">
+            <div key={i} className="bg-white p-6 rounded-[2.5rem] border border-emerald-50 space-y-6">
               <Skeleton className="w-full aspect-square rounded-[2rem]" />
               <div className="space-y-3">
-                <Skeleton className="h-2 w-1/3" />
-                <Skeleton className="h-4 w-2/3" />
-                <Skeleton className="h-3 w-1/2" />
+                <Skeleton className="h-3 w-1/3" />
+                <Skeleton className="h-6 w-full" />
+                <div className="flex gap-2">
+                  <Skeleton className="h-8 w-8 rounded-full" />
+                  <Skeleton className="h-8 w-20 rounded-xl" />
+                </div>
               </div>
             </div>
           ))
@@ -1036,8 +1077,8 @@ const HomePage = ({ companies, alerts, banners, favorites, toggleFavorite, curre
                 <Share size={18} />
               </button>
             </div>
-              <div className="w-full aspect-square bg-white dark:bg-emerald-950/50 rounded-[1.5rem] md:rounded-[2rem] mb-5 md:mb-6 flex items-center justify-center p-5 md:p-6 border border-emerald-50 dark:border-emerald-800/50 group-hover:border-emerald-200 dark:group-hover:border-emerald-700 shadow-inner transition-all overflow-hidden relative">
-                <img src={company.logo} alt={company.name} className="max-w-[85%] max-h-[85%] object-contain mix-blend-multiply dark:mix-blend-normal transform group-hover:scale-110 transition-transform duration-500 relative z-10" loading="lazy" />
+              <div className="w-full aspect-square bg-white rounded-[1.5rem] md:rounded-[2rem] mb-5 md:mb-6 flex items-center justify-center border border-emerald-50 group-hover:border-emerald-200 shadow-inner transition-all overflow-hidden relative">
+                <img src={company.logo} alt={company.name} className="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-500 relative z-10" loading="lazy" />
               </div>
               <div className="space-y-1.5 md:space-y-2 text-left">
                 <span className="text-[7px] md:text-[8px] font-black uppercase text-emerald-500 tracking-[0.2em]">{company.category}</span>
@@ -1076,29 +1117,29 @@ const DetailsPage = ({ companies, favorites, toggleFavorite, onShare }: any) => 
         <ArrowLeft size={16} /> Voltar
       </button>
 
-      <div className="bg-white dark:bg-emerald-900/20 border border-emerald-50 dark:border-emerald-800 rounded-[2.5rem] overflow-hidden shadow-2xl">
-        <div className="aspect-video bg-emerald-50 dark:bg-emerald-950 flex items-center justify-center p-12 relative">
-          <img src={company.logo} alt={company.name} className="max-w-full max-h-full object-contain relative z-10" />
-          <div className="absolute inset-0 bg-gradient-to-t from-emerald-950/20 to-transparent" />
+      <div className="bg-white border border-emerald-50 rounded-[2.5rem] overflow-hidden shadow-2xl">
+        <div className="aspect-video bg-gray-100 flex items-center justify-center relative overflow-hidden">
+          <img src={company.logo} alt={company.name} className="absolute inset-0 w-full h-full object-cover blur-2xl opacity-30 scale-110" />
+          <img src={company.logo} alt={company.name} className="max-w-full max-h-full object-contain relative z-10 p-8 md:p-12" />
         </div>
 
         <div className="p-8 md:p-12">
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-10">
             <div>
               <span className="text-[10px] font-black uppercase text-emerald-500 tracking-[0.3em] mb-2 block">{company.category}</span>
-              <h1 className="text-3xl md:text-5xl font-black text-emerald-950 dark:text-emerald-50 uppercase tracking-tighter leading-none">{company.name}</h1>
+              <h1 className="text-3xl md:text-5xl font-black text-emerald-950 uppercase tracking-tighter leading-none">{company.name}</h1>
             </div>
             <div className="flex flex-wrap items-center gap-3">
               <button 
                 onClick={() => toggleFavorite(company.id)}
-                className={`flex items-center gap-3 px-6 py-4 rounded-2xl font-black uppercase text-xs tracking-widest transition-all active:scale-95 ${favorites.includes(company.id) ? 'bg-red-500 text-white shadow-xl shadow-red-500/20' : 'bg-emerald-50 dark:bg-emerald-800 text-emerald-600 dark:text-emerald-400'}`}
+                className={`flex items-center gap-3 px-6 py-4 rounded-2xl font-black uppercase text-xs tracking-widest transition-all active:scale-95 ${favorites.includes(company.id) ? 'bg-red-500 text-white shadow-xl shadow-red-500/20' : 'bg-emerald-50 text-emerald-600'}`}
               >
                 <Heart size={20} className={favorites.includes(company.id) ? 'fill-white' : ''} />
                 {favorites.includes(company.id) ? 'Favoritado' : 'Favoritar'}
               </button>
               <button 
                 onClick={() => onShare(company)}
-                className="flex items-center gap-3 px-6 py-4 bg-emerald-50 dark:bg-emerald-800 text-emerald-600 dark:text-emerald-400 rounded-2xl font-black uppercase text-xs tracking-widest transition-all active:scale-95"
+                className="flex items-center gap-3 px-6 py-4 bg-emerald-50 text-emerald-600 rounded-2xl font-black uppercase text-xs tracking-widest transition-all active:scale-95"
               >
                 <Share size={20} />
                 Compartilhar
@@ -1109,17 +1150,17 @@ const DetailsPage = ({ companies, favorites, toggleFavorite, onShare }: any) => 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
             <div className="space-y-8">
               <div>
-                <h3 className="text-[10px] font-black uppercase tracking-widest text-emerald-950/30 dark:text-emerald-100/20 mb-4">Sobre</h3>
-                <p className="text-emerald-900/70 dark:text-emerald-100/60 leading-relaxed font-medium">
+                <h3 className="text-[10px] font-black uppercase tracking-widest text-emerald-950/30 mb-4">Sobre</h3>
+                <p className="text-emerald-900/70 leading-relaxed font-medium">
                   {company.description || 'Nenhuma descrição disponível para esta empresa.'}
                 </p>
               </div>
 
               <div className="space-y-4">
-                <h3 className="text-[10px] font-black uppercase tracking-widest text-emerald-950/30 dark:text-emerald-100/20 mb-4">Localização</h3>
-                <div className="flex items-start gap-4 p-5 bg-emerald-50/50 dark:bg-emerald-950/50 rounded-2xl border border-emerald-50 dark:border-emerald-800 mb-4">
+                <h3 className="text-[10px] font-black uppercase tracking-widest text-emerald-950/30 mb-4">Localização</h3>
+                <div className="flex items-start gap-4 p-5 bg-emerald-50/50 rounded-2xl border border-emerald-50 mb-4">
                   <MapPin className="text-emerald-500 shrink-0" size={20} />
-                  <p className="text-xs font-bold text-emerald-900 dark:text-emerald-100 uppercase tracking-wide leading-relaxed">
+                  <p className="text-xs font-bold text-emerald-900 uppercase tracking-wide leading-relaxed">
                     {company.address || 'Endereço não informado'}
                   </p>
                 </div>
@@ -1545,7 +1586,16 @@ const LoginPage = () => {
   };
 
   return (
-    <MotionDiv {...fadeUp} className="max-md mx-auto px-6 py-20 md:py-32">
+    <MotionDiv {...fadeUp} className="max-w-md mx-auto px-6 py-20 md:py-32 relative">
+      <div className="absolute top-8 left-6">
+        <Link 
+          to="/"
+          className="flex items-center gap-2 px-4 py-2 bg-emerald-50 text-emerald-600 rounded-xl font-black uppercase text-[10px] tracking-widest hover:bg-emerald-100 transition-all active:scale-95"
+        >
+          <Home size={14} />
+          Início
+        </Link>
+      </div>
       <div className="text-center mb-12">
         <AppLogo size="md" animate />
         <h1 className="text-3xl font-black text-emerald-950 dark:text-emerald-50 uppercase tracking-tighter mt-8 mb-2">Acesso Restrito</h1>
@@ -1831,8 +1881,8 @@ const AdminModal = ({ type, item, onClose, onSave, currentCity }: { type: 'compa
             <div className="space-y-4">
               <label className="text-[10px] font-black uppercase tracking-widest text-emerald-950/40 dark:text-emerald-100/20 ml-4">Imagem / Logo</label>
               <div className="flex flex-col sm:flex-row items-center gap-6">
-                <div className="w-full sm:w-32 h-48 sm:h-32 bg-emerald-50 dark:bg-emerald-950 rounded-2xl border-2 border-dashed border-emerald-200 dark:border-emerald-800 flex items-center justify-center overflow-hidden shrink-0">
-                  {logo ? <img src={logo} alt="Preview" className="w-full h-full object-contain" /> : <ImageIcon className="text-emerald-200" size={32} />}
+                <div className="w-full sm:w-32 h-48 sm:h-32 bg-white rounded-2xl border-2 border-dashed border-emerald-200 flex items-center justify-center overflow-hidden shrink-0">
+                  {logo ? <img src={logo} alt="Preview" className="w-full h-full object-cover" /> : <ImageIcon className="text-emerald-200" size={32} />}
                 </div>
                 <div className="flex-grow w-full">
                   <input type="file" accept="image/*" onChange={handleFileChange} className="hidden" id="admin-file-upload" />
@@ -1860,10 +1910,29 @@ const AdminModal = ({ type, item, onClose, onSave, currentCity }: { type: 'compa
 };
 
 const AdminDashboard = ({ companies, alerts, settings, notifications, onCall, banners, onRefresh, isRefreshing, openModal, handleDelete, isModalOpen, setIsModalOpen, modalType, editingItem, showToast }: any) => {
-  const [activeTab, setActiveTab] = useState('companies');
+  const [activeTab, setActiveTab] = useState('overview');
   const [loading, setLoading] = useState(false);
   const [freeRegistrations, setFreeRegistrations] = useState<any[]>([]);
   const navigate = useNavigate();
+
+  const statsData = useMemo(() => {
+    const categories = Array.from(new Set(companies.map((c: any) => c.category)));
+    const categoryCounts = categories.map(cat => ({
+      name: cat,
+      value: companies.filter((c: any) => c.category === cat).length
+    })).sort((a, b) => b.value - a.value).slice(0, 5);
+
+    const monthlyData = [
+      { name: 'Jan', acessos: 400, cliques: 240 },
+      { name: 'Fev', acessos: 300, cliques: 139 },
+      { name: 'Mar', acessos: 200, cliques: 980 },
+      { name: 'Abr', acessos: 278, cliques: 390 },
+      { name: 'Mai', acessos: 189, cliques: 480 },
+      { name: 'Jun', acessos: 239, cliques: 380 },
+    ];
+
+    return { categoryCounts, monthlyData };
+  }, [companies]);
 
   useEffect(() => {
     fetchFreeRegistrations();
@@ -2005,6 +2074,7 @@ const AdminDashboard = ({ companies, alerts, settings, notifications, onCall, ba
   };
 
   const tabs = [
+    { id: 'overview', label: 'Visão Geral', icon: LayoutDashboard },
     { id: 'companies', label: 'Empresas', icon: Database },
     { id: 'requests', label: 'Solicitações', icon: PlusCircle },
     { id: 'banners', label: 'Banners', icon: ImageIcon },
@@ -2017,11 +2087,28 @@ const AdminDashboard = ({ companies, alerts, settings, notifications, onCall, ba
     <div className="max-w-7xl mx-auto px-6 py-12 md:py-20">
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-8 mb-12 md:mb-20">
         <div className="text-left">
-          <h1 className="text-4xl md:text-6xl font-black text-emerald-950 dark:text-emerald-50 uppercase tracking-tighter leading-none mb-4">Painel <br /><span className="text-emerald-600">Administrativo</span></h1>
-          <p className="text-xs font-black uppercase tracking-[0.4em] text-emerald-950/30 dark:text-emerald-100/20">Gerencie o conteúdo do guia</p>
+          <div className="flex items-center gap-4 mb-6">
+            <Link 
+              to="/"
+              className="flex items-center gap-2 px-4 py-2 bg-emerald-50 text-emerald-600 rounded-xl font-black uppercase text-[10px] tracking-widest hover:bg-emerald-100 transition-all active:scale-95"
+            >
+              <Home size={14} />
+              Início
+            </Link>
+          </div>
+          <h1 className="text-4xl md:text-6xl font-black text-emerald-950 uppercase tracking-tighter leading-none mb-4">Painel <br /><span className="text-emerald-600">Administrativo</span></h1>
+          <p className="text-xs font-black uppercase tracking-[0.4em] text-emerald-950/30">Gerencie o conteúdo do guia</p>
         </div>
         
         <div className="flex items-center gap-3">
+          <a 
+            href={getWhatsAppLink(settings.phone, 'Olá! Preciso de suporte no Painel Administrativo.')}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center gap-3 px-6 py-4 bg-emerald-50 text-emerald-600 rounded-2xl font-black uppercase text-xs tracking-widest hover:bg-emerald-100 transition-all active:scale-95"
+          >
+            <MessageCircle size={20} /> Suporte
+          </a>
           <button 
             onClick={onRefresh}
             disabled={isRefreshing}
@@ -2057,6 +2144,112 @@ const AdminDashboard = ({ companies, alerts, settings, notifications, onCall, ba
       </div>
 
       <div className="bg-white dark:bg-emerald-900/20 border border-emerald-50 dark:border-emerald-800 rounded-[3rem] p-8 md:p-12 shadow-2xl min-h-[600px]">
+        {activeTab === 'overview' && (
+          <div className="space-y-10">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              <div className="p-8 bg-emerald-600 rounded-[2.5rem] text-white shadow-xl shadow-emerald-600/20">
+                <div className="flex items-center justify-between mb-4">
+                  <div className="w-12 h-12 bg-white/20 rounded-2xl flex items-center justify-center">
+                    <Users size={24} />
+                  </div>
+                  <span className="text-[10px] font-black uppercase tracking-widest opacity-60">+12% este mês</span>
+                </div>
+                <h3 className="text-4xl font-black mb-1">{companies.length}</h3>
+                <p className="text-[10px] font-black uppercase tracking-widest opacity-60">Empresas Cadastradas</p>
+              </div>
+
+              <div className="p-8 bg-white border border-emerald-50 rounded-[2.5rem] shadow-sm">
+                <div className="flex items-center justify-between mb-4">
+                  <div className="w-12 h-12 bg-emerald-50 rounded-2xl flex items-center justify-center text-emerald-600">
+                    <MousePointer2 size={24} />
+                  </div>
+                  <span className="text-[10px] font-black uppercase tracking-widest text-emerald-600">+5% hoje</span>
+                </div>
+                <h3 className="text-4xl font-black text-emerald-950 mb-1">1.284</h3>
+                <p className="text-[10px] font-black uppercase tracking-widest text-emerald-950/30">Cliques no WhatsApp</p>
+              </div>
+
+              <div className="p-8 bg-white border border-emerald-50 rounded-[2.5rem] shadow-sm">
+                <div className="flex items-center justify-between mb-4">
+                  <div className="w-12 h-12 bg-emerald-50 rounded-2xl flex items-center justify-center text-emerald-600">
+                    <BarChart3 size={24} />
+                  </div>
+                  <span className="text-[10px] font-black uppercase tracking-widest text-emerald-600">Meta: 80%</span>
+                </div>
+                <h3 className="text-4xl font-black text-emerald-950 mb-1">8.420</h3>
+                <p className="text-[10px] font-black uppercase tracking-widest text-emerald-950/30">Acessos Totais</p>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+              <div className="p-8 bg-white border border-emerald-50 rounded-[3rem] shadow-sm">
+                <h3 className="text-sm font-black uppercase tracking-widest text-emerald-950 mb-8">Desempenho Mensal</h3>
+                <div className="h-[300px] w-full">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <AreaChart data={statsData.monthlyData}>
+                      <defs>
+                        <linearGradient id="colorAcessos" x1="0" y1="0" x2="0" y2="1">
+                          <stop offset="5%" stopColor="#059669" stopOpacity={0.1}/>
+                          <stop offset="95%" stopColor="#059669" stopOpacity={0}/>
+                        </linearGradient>
+                      </defs>
+                      <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f0fdf4" />
+                      <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{fontSize: 10, fontWeight: 900, fill: '#064e3b'}} dy={10} />
+                      <YAxis hide />
+                      <Tooltip 
+                        contentStyle={{ borderRadius: '1rem', border: 'none', boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1)', fontSize: '10px', fontWeight: 900, textTransform: 'uppercase' }}
+                      />
+                      <Area type="monotone" dataKey="acessos" stroke="#059669" strokeWidth={3} fillOpacity={1} fill="url(#colorAcessos)" />
+                    </AreaChart>
+                  </ResponsiveContainer>
+                </div>
+              </div>
+
+              <div className="p-8 bg-white border border-emerald-50 rounded-[3rem] shadow-sm">
+                <h3 className="text-sm font-black uppercase tracking-widest text-emerald-950 mb-8">Top Categorias</h3>
+                <div className="h-[300px] w-full">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <BarChart data={statsData.categoryCounts} layout="vertical">
+                      <CartesianGrid strokeDasharray="3 3" horizontal={false} stroke="#f0fdf4" />
+                      <XAxis type="number" hide />
+                      <YAxis dataKey="name" type="category" axisLine={false} tickLine={false} tick={{fontSize: 8, fontWeight: 900, fill: '#064e3b'}} width={80} />
+                      <Tooltip 
+                        cursor={{fill: '#f0fdf4'}}
+                        contentStyle={{ borderRadius: '1rem', border: 'none', boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1)', fontSize: '10px', fontWeight: 900, textTransform: 'uppercase' }}
+                      />
+                      <Bar dataKey="value" fill="#059669" radius={[0, 10, 10, 0]} barSize={20} />
+                    </BarChart>
+                  </ResponsiveContainer>
+                </div>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 gap-8">
+              <div className="p-8 bg-white border border-emerald-50 rounded-[3rem] shadow-sm">
+                <h3 className="text-sm font-black uppercase tracking-widest text-emerald-950 mb-8">Atividade Recente</h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  {[
+                    { title: 'Nova empresa cadastrada', time: 'Há 2 horas', city: 'Bernardino de Campos', icon: Plus },
+                    { title: 'Banner atualizado', time: 'Há 5 horas', city: 'Santa Cruz do Rio Pardo', icon: ImageIcon },
+                    { title: 'Alerta de plantão enviado', time: 'Há 8 horas', city: 'Ourinhos', icon: Megaphone },
+                    { title: 'Configurações alteradas', time: 'Há 1 dia', city: 'Geral', icon: Settings },
+                  ].map((item, i) => (
+                    <div key={i} className="flex items-center gap-4 p-4 bg-emerald-50/30 rounded-2xl border border-emerald-50/50">
+                      <div className="w-10 h-10 rounded-xl bg-white flex items-center justify-center text-emerald-600 shadow-sm">
+                        <item.icon size={18} />
+                      </div>
+                      <div className="text-left">
+                        <p className="text-xs font-black uppercase text-emerald-950">{item.title}</p>
+                        <p className="text-[10px] font-bold text-emerald-950/30 uppercase tracking-widest">{item.time} • {item.city}</p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
         {activeTab === 'companies' && (
           <div className="space-y-8">
             <div className="flex justify-between items-center">
@@ -2397,8 +2590,8 @@ const App = () => {
   const handleShare = async (company: any) => {
     const shareData = {
       title: company.name,
-      text: `Confira ${company.name} no Guia Digital!`,
-      url: `${window.location.origin}/#/empresa/${company.id}`
+      text: company.id ? `Confira ${company.name} no Guia Digital!` : `Confira o Guia Digital Regional! Tudo o que você precisa em um só lugar.`,
+      url: company.id ? `${window.location.origin}/#/empresa/${company.id}` : window.location.origin
     };
 
     try {
@@ -2648,7 +2841,14 @@ const App = () => {
               </Link>
             </div>
 
-            <div className="flex justify-end">
+            <div className="flex justify-end gap-2">
+              <button 
+                onClick={() => handleShare({ name: 'Guia Digital Regional', id: '', url: window.location.href })}
+                className="w-10 h-10 md:w-12 md:h-12 bg-emerald-50 text-emerald-600 rounded-2xl flex items-center justify-center hover:bg-emerald-100 transition-all active:scale-90 shadow-sm"
+                title="Compartilhar App"
+              >
+                <Share size={18} />
+              </button>
               {location.pathname !== '/' && (
                 <Link 
                   to="/"
@@ -2721,7 +2921,7 @@ const App = () => {
 
             <div className="space-y-1 pt-2 w-full">
               <p className="text-emerald-950/30 text-[8px] font-bold uppercase tracking-[0.3em] px-4 leading-relaxed">{settings.address}</p>
-              <p className="text-emerald-950/20 text-[7px] font-bold uppercase tracking-[0.2em]">© 2024 Guia Digital • Bernardino de Campos, SP</p>
+              <p className="text-emerald-950/20 text-[7px] font-bold uppercase tracking-[0.2em]">© {new Date().getFullYear()} Guia Digital • {cityName}</p>
             </div>
           </div>
         </footer>
