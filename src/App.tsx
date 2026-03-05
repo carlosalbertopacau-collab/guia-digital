@@ -6,11 +6,13 @@ import {
   Search, MessageCircle, Phone, HeartPulse, User, LogOut, X, 
   ArrowLeft, ArrowRight, Loader2, Zap, Edit2, Trash2,
   Database, Plus, Save, Settings, CheckCircle2, ShieldCheck, 
+  PlusCircle,
   Globe, PhoneCall, Home, AlertCircle, Info, Code2,
   Instagram, Facebook, Mail, Lock, Eye, EyeOff, Sun, Moon, MapPin, 
   Bell, Megaphone, Upload, Image as ImageIcon, MapPinned, ChevronLeft, AlertTriangle,
   RefreshCw, Menu as MenuIcon, Smartphone, Star,
-  Award, TrendingUp, Gem, Check, Rocket, ChevronRight, Share, Heart, ChevronDown
+  Award, TrendingUp, Gem, Check, Rocket, ChevronRight, Share, Heart, ChevronDown,
+  Copy, CheckCircle
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
@@ -95,17 +97,34 @@ const subscribeUserToPush = async () => {
 
 // --- Base Components ---
 
-const ThemeToggle = ({ theme, setTheme }: { theme: 'light' | 'dark', setTheme: (t: 'light' | 'dark') => void }) => {
+const Skeleton = ({ className }: { className?: string }) => (
+  <div className={`animate-pulse bg-emerald-100/50 rounded-2xl ${className}`} />
+);
+
+const Toast = ({ message, type = 'success', onClose }: { message: string, type?: 'success' | 'error', onClose: () => void }) => {
+  useEffect(() => {
+    const timer = setTimeout(onClose, 3000);
+    return () => clearTimeout(timer);
+  }, [onClose]);
+
   return (
-    <button
-      onClick={() => setTheme(theme === 'light' ? 'dark' : 'light')}
-      className="w-12 h-12 bg-white/5 border border-white/10 rounded-2xl text-emerald-100 flex items-center justify-center hover:bg-emerald-600 hover:text-white transition-all shadow-sm active:scale-95"
-      aria-label="Alternar tema"
+    <MotionDiv
+      initial={{ opacity: 0, y: 50, scale: 0.9 }}
+      animate={{ opacity: 1, y: 0, scale: 1 }}
+      exit={{ opacity: 0, y: 20, scale: 0.9 }}
+      className={`fixed bottom-8 left-1/2 -translate-x-1/2 z-[3000] flex items-center gap-3 px-6 py-4 rounded-2xl shadow-2xl backdrop-blur-xl border ${
+        type === 'success' 
+          ? 'bg-emerald-600/90 text-white border-emerald-400/20' 
+          : 'bg-red-600/90 text-white border-red-400/20'
+      }`}
     >
-      {theme === 'light' ? <Moon size={20} /> : <Sun size={20} />}
-    </button>
+      {type === 'success' ? <CheckCircle size={20} /> : <AlertCircle size={20} />}
+      <span className="text-xs font-black uppercase tracking-widest whitespace-nowrap">{message}</span>
+    </MotionDiv>
   );
 };
+
+
 
 const BackToTop = () => {
   const [visible, setVisible] = useState(false);
@@ -133,7 +152,7 @@ const BackToTop = () => {
   );
 };
 
-const AppLogo = ({ light = false, size = "md", animate = false }: { light?: boolean, size?: "sm" | "md" | "lg", animate?: boolean }) => {
+const AppLogo = ({ size = "md", animate = false }: { size?: "sm" | "md" | "lg", animate?: boolean }) => {
   const isLarge = size === "lg";
   const isSmall = size === "sm";
   
@@ -143,13 +162,13 @@ const AppLogo = ({ light = false, size = "md", animate = false }: { light?: bool
   const subSize = isLarge ? 'text-xs' : 'text-[8px] md:text-[9px]';
 
   return (
-    <div className={`flex items-center gap-4 md:gap-5 group select-none ${light ? 'text-white' : 'text-emerald-950 dark:text-emerald-50'}`}>
+    <div className={`flex items-center gap-4 md:gap-5 group select-none text-emerald-950`}>
       <div className={`relative ${iconBoxSize}`}>
-        <div className={`absolute inset-0 rounded-[30%] rotate-6 opacity-20 blur-lg transition-transform group-hover:rotate-12 ${light ? 'bg-emerald-400' : 'bg-emerald-600'}`} />
+        <div className={`absolute inset-0 rounded-[30%] rotate-6 opacity-20 blur-lg transition-transform group-hover:rotate-12 bg-emerald-600`} />
         <MotionDiv 
           animate={animate ? { rotateY: 360, rotateZ: [0, 5, 0, -5, 0] } : {}}
           transition={animate ? { rotateY: { duration: 3, repeat: Infinity, ease: "linear" }, rotateZ: { duration: 4, repeat: Infinity } } : {}}
-          className={`relative h-full w-full rounded-[30%] flex items-center justify-center shadow-2xl transition-all duration-500 overflow-hidden border-b-4 ${light ? 'bg-gradient-to-br from-emerald-400 to-teal-600 border-teal-700 shadow-emerald-500/20' : 'bg-gradient-to-br from-emerald-600 to-emerald-800 border-emerald-900 shadow-emerald-900/30'}`}
+          className={`relative h-full w-full rounded-[30%] flex items-center justify-center shadow-2xl transition-all duration-500 overflow-hidden border-b-4 bg-gradient-to-br from-emerald-600 to-emerald-800 border-emerald-900 shadow-emerald-900/30`}
         >
           <div className="absolute top-0 left-0 w-full h-1/2 bg-white/10 -skew-y-12" />
           <div className="relative z-10 flex flex-col items-center">
@@ -164,8 +183,8 @@ const AppLogo = ({ light = false, size = "md", animate = false }: { light?: bool
       </div>
       <div className="flex flex-col text-left">
         <h1 className={`${titleSize} font-black uppercase tracking-tighter leading-none flex items-center gap-1`}>
-          <span className={light ? 'text-white' : 'text-emerald-950 dark:text-emerald-50'}>Guia</span>
-          <span className={`relative ${light ? 'text-emerald-300' : 'text-emerald-600'}`}>
+          <span className="text-emerald-950">Guia</span>
+          <span className="relative text-emerald-600">
             Digital
             <MotionDiv 
               initial={{ x: '-100%' }}
@@ -176,8 +195,8 @@ const AppLogo = ({ light = false, size = "md", animate = false }: { light?: bool
           </span>
         </h1>
         <div className="flex items-center gap-2 mt-1 md:mt-2">
-          <div className={`h-[1px] w-4 md:w-6 ${light ? 'bg-white/20' : 'bg-emerald-900/20 dark:bg-emerald-100/20'}`} />
-          <span className={`${subSize} font-bold uppercase tracking-[0.4em] opacity-60 ${light ? 'text-emerald-100' : 'text-emerald-800 dark:text-emerald-200'}`}>
+          <div className="h-[1px] w-4 md:w-6 bg-emerald-900/20" />
+          <span className={`${subSize} font-bold uppercase tracking-[0.4em] opacity-60 text-emerald-800`}>
             Conectando a Cidade
           </span>
         </div>
@@ -200,7 +219,8 @@ const SideDrawer = ({
   pushEnabled,
   onEnablePush,
   currentCity,
-  onCityChange
+  onCityChange,
+  onOpenFreeRegistration
 }: { 
   isOpen: boolean, 
   onClose: () => void, 
@@ -213,7 +233,8 @@ const SideDrawer = ({
   pushEnabled: boolean,
   onEnablePush: () => void,
   currentCity: string,
-  onCityChange: (city: string) => void
+  onCityChange: (city: string) => void,
+  onOpenFreeRegistration: () => void
 }) => {
   const navigate = useNavigate();
   const cityName = SUPPORTED_CITIES.find(c => c.id === currentCity)?.name || 'Selecione a Cidade';
@@ -243,31 +264,31 @@ const SideDrawer = ({
             animate={{ x: 0 }}
             exit={{ x: '-100%' }}
             transition={{ type: 'spring', damping: 25, stiffness: 200 }}
-            className="relative h-full w-full max-w-[min(380px,85%)] bg-white dark:bg-emerald-950 shadow-3xl border-r border-emerald-50 dark:border-emerald-800 flex flex-col"
+            className="relative h-full w-full max-w-[min(380px,85%)] bg-white shadow-3xl border-r border-emerald-50 flex flex-col"
           >
-            <div className="p-8 flex justify-between items-center border-b border-emerald-50 dark:border-emerald-800">
+            <div className="p-8 flex justify-between items-center border-b border-emerald-50">
               <AppLogo size="sm" />
-              <button onClick={onClose} className="p-2.5 bg-emerald-50 dark:bg-emerald-900 rounded-xl text-emerald-600 dark:text-emerald-400 active:scale-90 transition-transform">
+              <button onClick={onClose} className="p-2.5 bg-emerald-50 rounded-xl text-emerald-600 active:scale-90 transition-transform">
                 <X size={20} />
               </button>
             </div>
 
             <div className="flex-1 overflow-y-auto no-scrollbar p-6 space-y-10">
               <div className="space-y-4">
-                <span className="text-[10px] font-black uppercase tracking-[0.3em] text-emerald-950/30 dark:text-emerald-100/20 ml-4">Localização</span>
+                <span className="text-[10px] font-black uppercase tracking-[0.3em] text-emerald-950/30 ml-4">Localização</span>
                 <button
                   onClick={() => {
                     onCityChange(currentCity);
                     onClose();
                   }}
-                  className="w-full flex items-center justify-between p-4 rounded-2xl bg-emerald-50/50 dark:bg-emerald-900/20 border border-emerald-50 dark:border-emerald-800"
+                  className="w-full flex items-center justify-between p-4 rounded-2xl bg-emerald-50/50 border border-emerald-50"
                 >
                   <div className="flex items-center gap-4">
-                    <div className="w-10 h-10 rounded-xl bg-white dark:bg-emerald-800 flex items-center justify-center text-emerald-600 dark:text-emerald-400 shadow-sm">
+                    <div className="w-10 h-10 rounded-xl bg-white flex items-center justify-center text-emerald-600 shadow-sm">
                       <MapPin size={20} />
                     </div>
                     <div className="text-left">
-                      <span className="block font-black uppercase text-[10px] tracking-widest text-emerald-950 dark:text-emerald-50">{cityName}</span>
+                      <span className="block font-black uppercase text-[10px] tracking-widest text-emerald-950">{cityName}</span>
                       <span className="block text-[8px] font-bold text-emerald-500 uppercase tracking-widest">Alterar Cidade</span>
                     </div>
                   </div>
@@ -276,19 +297,29 @@ const SideDrawer = ({
               </div>
 
               <div className="space-y-2">
-                <span className="text-[10px] font-black uppercase tracking-[0.3em] text-emerald-950/30 dark:text-emerald-100/20 ml-4">Navegação Principal</span>
+                <span className="text-[10px] font-black uppercase tracking-[0.3em] text-emerald-950/30 ml-4">Navegação Principal</span>
                 {menuLinks.map((link) => (
                   <button
                     key={link.path}
                     onClick={() => { navigate(link.path); onClose(); }}
-                    className="w-full flex items-center gap-4 p-4 rounded-2xl hover:bg-emerald-50 dark:hover:bg-emerald-900/50 text-emerald-950 dark:text-emerald-50 transition-colors group"
+                    className="w-full flex items-center gap-4 p-4 rounded-2xl hover:bg-emerald-50 text-emerald-950 transition-colors group"
                   >
-                    <div className="w-10 h-10 rounded-xl bg-emerald-50 dark:bg-emerald-900 flex items-center justify-center text-emerald-600 dark:text-emerald-400 group-hover:scale-110 transition-transform">
+                    <div className="w-10 h-10 rounded-xl bg-emerald-50 flex items-center justify-center text-emerald-600 group-hover:scale-110 transition-transform">
                       <link.icon size={20} />
                     </div>
                     <span className="font-black uppercase text-xs tracking-widest">{link.label}</span>
                   </button>
                 ))}
+                
+                <button
+                  onClick={() => { onOpenFreeRegistration(); onClose(); }}
+                  className="w-full flex items-center gap-4 p-4 rounded-2xl bg-emerald-500/10 text-emerald-600 hover:bg-emerald-500/20 transition-all group"
+                >
+                  <div className="w-10 h-10 rounded-xl bg-emerald-500/20 flex items-center justify-center text-emerald-600 group-hover:scale-110 transition-transform">
+                    <Plus size={20} />
+                  </div>
+                  <span className="font-black uppercase text-xs tracking-widest">Cadastro Grátis</span>
+                </button>
               </div>
 
               <div className="px-2">
@@ -339,6 +370,161 @@ const SideDrawer = ({
 };
 
 // --- Welcome Screen (Splash) ---
+
+const FreeRegistrationModal = ({ isOpen, onClose, currentCity }: { isOpen: boolean, onClose: () => void, currentCity: string }) => {
+  const [formData, setFormData] = useState({
+    companyName: '',
+    phone: '',
+    category: '',
+    address: ''
+  });
+  const [loading, setLoading] = useState(false);
+  const [success, setSuccess] = useState(false);
+  const navigate = useNavigate();
+
+  if (!isOpen) return null;
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+    
+    try {
+      const { error } = await supabase
+        .from('free_registrations')
+        .insert([{
+          city: currentCity,
+          company_name: formData.companyName,
+          phone: formData.phone,
+          category: formData.category,
+          address: formData.address
+        }]);
+
+      if (error) throw error;
+      setSuccess(true);
+    } catch (error) {
+      console.error('Erro ao cadastrar:', error);
+      alert('Erro ao realizar cadastro. Tente novamente.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <div className="fixed inset-0 z-[4000] flex items-center justify-center p-4">
+      <MotionDiv
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        onClick={onClose}
+        className="absolute inset-0 bg-emerald-950/60 backdrop-blur-md"
+      />
+      <MotionDiv
+        initial={{ scale: 0.9, opacity: 0, y: 20 }}
+        animate={{ scale: 1, opacity: 1, y: 0 }}
+        exit={{ scale: 0.9, opacity: 0, y: 20 }}
+        className="relative w-full max-w-md bg-white dark:bg-emerald-950 rounded-[2.5rem] shadow-4xl overflow-hidden p-8"
+      >
+        <div className="flex justify-between items-center mb-8">
+          <div className="text-left">
+            <h3 className="text-2xl font-black text-emerald-950 dark:text-emerald-50 uppercase tracking-tight">Cadastro Grátis</h3>
+            <p className="text-[10px] font-black uppercase tracking-widest text-emerald-500 mt-1">Sua empresa no guia local</p>
+          </div>
+          <button onClick={onClose} className="p-3 bg-emerald-50 dark:bg-emerald-900 rounded-2xl text-emerald-600 dark:text-emerald-400 active:scale-90 transition-transform">
+            <X size={20} />
+          </button>
+        </div>
+
+        {success ? (
+          <div className="text-center py-10 space-y-6">
+            <div className="w-20 h-20 bg-emerald-100 dark:bg-emerald-900/50 rounded-full flex items-center justify-center text-emerald-600 mx-auto">
+              <CheckCircle2 size={40} />
+            </div>
+            <div>
+              <h4 className="text-xl font-black text-emerald-950 dark:text-emerald-50 uppercase">Solicitação Enviada!</h4>
+              <p className="text-xs font-medium text-emerald-900/50 dark:text-emerald-100/40 mt-2">Nossa equipe analisará os dados e publicará em breve.</p>
+            </div>
+            <div className="pt-6 space-y-3">
+              <button 
+                onClick={() => { onClose(); navigate('/planos'); }}
+                className="w-full py-4 bg-amber-500 text-white rounded-2xl font-black uppercase text-[10px] tracking-widest shadow-lg shadow-amber-500/20 active:scale-95 transition-all flex items-center justify-center gap-2"
+              >
+                <Star size={14} className="fill-white/20" />
+                Migrar para Plano Premium
+              </button>
+              <button onClick={onClose} className="w-full py-4 text-emerald-600 font-black uppercase text-[10px] tracking-widest">Fechar</button>
+            </div>
+          </div>
+        ) : (
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <div className="space-y-1">
+              <label className="text-[10px] font-black uppercase tracking-widest text-emerald-950/30 dark:text-emerald-100/20 ml-2">Nome da Empresa</label>
+              <input 
+                required
+                type="text"
+                value={formData.companyName}
+                onChange={e => setFormData({...formData, companyName: e.target.value})}
+                className="w-full p-4 bg-emerald-50/50 dark:bg-emerald-900/20 border border-emerald-50 dark:border-emerald-800 rounded-2xl outline-none focus:border-emerald-500 transition-all text-emerald-950 dark:text-emerald-50 font-bold"
+                placeholder="Ex: Padaria do João"
+              />
+            </div>
+            <div className="space-y-1">
+              <label className="text-[10px] font-black uppercase tracking-widest text-emerald-950/30 dark:text-emerald-100/20 ml-2">Telefone de Contato</label>
+              <input 
+                required
+                type="tel"
+                value={formData.phone}
+                onChange={e => setFormData({...formData, phone: e.target.value})}
+                className="w-full p-4 bg-emerald-50/50 dark:bg-emerald-900/20 border border-emerald-50 dark:border-emerald-800 rounded-2xl outline-none focus:border-emerald-500 transition-all text-emerald-950 dark:text-emerald-50 font-bold"
+                placeholder="(00) 00000-0000"
+              />
+            </div>
+            <div className="space-y-1">
+              <label className="text-[10px] font-black uppercase tracking-widest text-emerald-950/30 dark:text-emerald-100/20 ml-2">Categoria no Guia</label>
+              <input 
+                required
+                type="text"
+                value={formData.category}
+                onChange={e => setFormData({...formData, category: e.target.value})}
+                className="w-full p-4 bg-emerald-50/50 dark:bg-emerald-900/20 border border-emerald-50 dark:border-emerald-800 rounded-2xl outline-none focus:border-emerald-500 transition-all text-emerald-950 dark:text-emerald-50 font-bold"
+                placeholder="Ex: Alimentação, Saúde..."
+              />
+            </div>
+            <div className="space-y-1">
+              <label className="text-[10px] font-black uppercase tracking-widest text-emerald-950/30 dark:text-emerald-100/20 ml-2">Endereço Básico</label>
+              <input 
+                required
+                type="text"
+                value={formData.address}
+                onChange={e => setFormData({...formData, address: e.target.value})}
+                className="w-full p-4 bg-emerald-50/50 dark:bg-emerald-900/20 border border-emerald-50 dark:border-emerald-800 rounded-2xl outline-none focus:border-emerald-500 transition-all text-emerald-950 dark:text-emerald-50 font-bold"
+                placeholder="Rua, Número, Bairro"
+              />
+            </div>
+
+            <div className="pt-4 space-y-3">
+              <button 
+                type="submit"
+                disabled={loading}
+                className="w-full py-5 bg-emerald-600 text-white rounded-2xl font-black uppercase text-xs tracking-widest shadow-xl shadow-emerald-600/20 active:scale-95 transition-all flex items-center justify-center gap-2 disabled:opacity-50"
+              >
+                {loading ? <Loader2 className="animate-spin" size={20} /> : 'Cadastrar Gratuitamente'}
+              </button>
+              
+              <button 
+                type="button"
+                onClick={() => { onClose(); navigate('/planos'); }}
+                className="w-full py-4 bg-amber-500/10 text-amber-600 dark:text-amber-400 rounded-2xl font-black uppercase text-[10px] tracking-widest border border-amber-500/20 active:scale-95 transition-all flex items-center justify-center gap-2"
+              >
+                <Star size={14} className="fill-amber-500/20" />
+                Migrar para Plano Premium
+              </button>
+            </div>
+          </form>
+        )}
+      </MotionDiv>
+    </div>
+  );
+};
 
 const CitySelectorModal = ({ isOpen, onClose, onSelect, currentCity }: { isOpen: boolean, onClose: () => void, onSelect: (city: string) => void, currentCity: string }) => {
   const navigate = useNavigate();
@@ -454,7 +640,7 @@ const WelcomeScreen = ({ onComplete, selectedCity, onCitySelect }: { onComplete:
             className="w-full flex flex-col"
           >
             <div className="mb-8 shrink-0">
-              <AppLogo light size="md" animate={false} />
+              <AppLogo size="md" animate={false} />
               <h2 className="text-white text-3xl font-black uppercase tracking-tighter mt-8">Escolha sua Cidade</h2>
               <p className="text-emerald-400/60 text-xs font-bold uppercase tracking-widest mt-2">Selecione para ver o guia local</p>
             </div>
@@ -497,7 +683,7 @@ const WelcomeScreen = ({ onComplete, selectedCity, onCitySelect }: { onComplete:
               transition={{ duration: 1, type: "spring" }}
               className="perspective-[1000px]"
             >
-              <AppLogo light size="lg" animate={true} />
+              <AppLogo size="lg" animate={true} />
             </MotionDiv>
             
             <MotionDiv 
@@ -599,23 +785,29 @@ const BannerCarousel = ({ banners, currentCity }: { banners: Banner[], currentCi
   );
 };
 
-const HomePage = ({ companies, alerts, banners, favorites, toggleFavorite, currentCity, onChangeCity, isAdmin, onEditAlert, onDeleteAlert }: any) => {
+const HomePage = ({ companies, alerts, banners, favorites, toggleFavorite, currentCity, onChangeCity, isAdmin, onEditAlert, onDeleteAlert, onOpenFreeRegistration, onShare, isRefreshing }: any) => {
   const [search, setSearch] = useState('');
-  const [activeCategory, setActiveCategory] = useState('Todas');
+  const [searchTerm, setSearchTerm] = useState('');
   const navigate = useNavigate();
   const cityName = SUPPORTED_CITIES.find(c => c.id === currentCity)?.name || 'Guia Digital';
 
-  const categories = useMemo(() => ['Todas', ...Array.from(new Set(companies.map((c:any) => c.category)))] as string[], [companies]);
-
   const filtered = useMemo(() => {
     return companies.filter((c:any) => {
-      const matchSearch = c.name.toLowerCase().includes(search.toLowerCase()) || c.category.toLowerCase().includes(search.toLowerCase());
-      const matchCategory = activeCategory === 'Todas' || c.category === activeCategory;
-      return matchSearch && matchCategory;
+      const matchSearch = c.name.toLowerCase().includes(searchTerm.toLowerCase()) || c.category.toLowerCase().includes(searchTerm.toLowerCase());
+      return matchSearch;
     });
-  }, [companies, search, activeCategory]);
+  }, [companies, searchTerm]);
 
-  const isSearching = search.length > 0 || activeCategory !== 'Todas';
+  const handleSearch = () => {
+    setSearchTerm(search);
+  };
+
+  const handleClear = () => {
+    setSearch('');
+    setSearchTerm('');
+  };
+
+  const isSearching = searchTerm.length > 0;
 
   return (
     <MotionDiv {...fadeUp} className="max-w-7xl mx-auto px-5 md:px-6 py-8 md:py-20">
@@ -668,64 +860,70 @@ const HomePage = ({ companies, alerts, banners, favorites, toggleFavorite, curre
         <AnimatePresence>
           {!isSearching && (
             <MotionDiv initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, y: -20 }} transition={{ duration: 0.3 }}>
-              <h1 className="text-3xl md:text-7xl font-black text-emerald-950 dark:text-emerald-50 uppercase tracking-tighter leading-[1] md:leading-[0.9] mb-6 md:mb-8">
-                Descubra o melhor de <br className="hidden md:block" /><span className="text-emerald-600">{cityName}</span>
+              <h1 className="text-2xl md:text-5xl font-black text-emerald-950 uppercase tracking-tighter leading-tight mb-4">
+                Descubra o melhor de <br className="hidden md:block" />
+                <span className="bg-gradient-to-r from-emerald-600 to-teal-500 bg-clip-text text-transparent animate-pulse">
+                  {cityName}
+                </span>
               </h1>
               
-              <div className="flex flex-col md:flex-row items-center justify-center gap-4 mb-10">
-                <MotionDiv
-                  animate={{ scale: [1, 1.02, 1] }}
-                  transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
-                  className="w-full md:w-auto"
-                >
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-10">
+                <MotionDiv whileHover={{ y: -5 }} whileTap={{ scale: 0.95 }}>
                   <button 
                     onClick={() => navigate('/plantao')}
-                    className="group relative flex items-center gap-4 px-8 py-5 bg-red-500/10 hover:bg-red-500/20 border-2 border-red-500/20 rounded-3xl transition-all active:scale-95 shadow-lg shadow-red-500/5 w-full md:w-auto overflow-hidden"
+                    className="group relative flex items-center gap-4 px-6 py-5 bg-red-500/10 hover:bg-red-500/20 border-2 border-red-500/20 rounded-3xl transition-all shadow-lg shadow-red-500/5 w-full overflow-hidden"
                   >
-                    <div className="relative">
-                      <HeartPulse className="text-red-500 group-hover:scale-110 transition-transform" size={28} />
+                    <div className="w-12 h-12 rounded-2xl bg-red-500/20 flex items-center justify-center text-red-500 shrink-0">
+                      <HeartPulse size={24} />
                     </div>
                     <div className="text-left">
-                      <span className="block text-[10px] font-black uppercase tracking-[0.2em] text-red-500/60 leading-none mb-1">Emergência</span>
-                      <span className="block text-sm font-black uppercase tracking-widest text-red-600 dark:text-red-400">Farmácia de Plantão</span>
+                      <span className="block text-[9px] font-black uppercase tracking-[0.2em] text-red-500/60 leading-none mb-1">Emergência</span>
+                      <span className="block text-xs font-black uppercase tracking-widest text-red-600 dark:text-red-400">Farmácia de Plantão</span>
                     </div>
                   </button>
                 </MotionDiv>
 
-                <MotionDiv
-                  animate={{ scale: [1, 1.02, 1] }}
-                  transition={{ duration: 2, repeat: Infinity, ease: "easeInOut", delay: 1 }}
-                  className="w-full md:w-auto"
-                >
+                <MotionDiv whileHover={{ y: -5 }} whileTap={{ scale: 0.95 }}>
                   <button 
                     onClick={() => navigate('/planos')}
-                    className="group relative flex items-center gap-4 px-8 py-5 bg-amber-500/10 hover:bg-amber-500/20 border-2 border-amber-500/20 rounded-3xl transition-all active:scale-95 shadow-lg shadow-amber-500/5 w-full md:w-auto overflow-hidden"
+                    className="group relative flex items-center gap-4 px-6 py-5 bg-amber-500/10 hover:bg-amber-500/20 border-2 border-amber-500/20 rounded-3xl transition-all shadow-lg shadow-amber-500/5 w-full overflow-hidden"
                   >
-                    <div className="relative">
-                      <Star className="text-amber-500 group-hover:scale-110 transition-transform fill-amber-500/20" size={28} />
+                    <div className="w-12 h-12 rounded-2xl bg-amber-500/20 flex items-center justify-center text-amber-500 shrink-0">
+                      <Star size={24} className="fill-amber-500/20" />
                     </div>
                     <div className="text-left">
-                      <span className="block text-[10px] font-black uppercase tracking-[0.2em] text-amber-500/60 leading-none mb-1">Empresas</span>
-                      <span className="block text-sm font-black uppercase tracking-widest text-amber-600 dark:text-amber-400">Seja um Parceiro</span>
+                      <span className="block text-[9px] font-black uppercase tracking-[0.2em] text-amber-500/60 leading-none mb-1">Empresas</span>
+                      <span className="block text-xs font-black uppercase tracking-widest text-amber-600 dark:text-amber-400">Seja um Parceiro</span>
                     </div>
                   </button>
                 </MotionDiv>
 
-                <MotionDiv
-                  animate={{ scale: [1, 1.02, 1] }}
-                  transition={{ duration: 2, repeat: Infinity, ease: "easeInOut", delay: 1.5 }}
-                  className="w-full md:w-auto"
-                >
+                <MotionDiv whileHover={{ y: -5 }} whileTap={{ scale: 0.95 }}>
                   <button 
                     onClick={onChangeCity}
-                    className="group relative flex items-center gap-4 px-8 py-5 bg-emerald-500/10 hover:bg-emerald-500/20 border-2 border-emerald-500/20 rounded-3xl transition-all active:scale-95 shadow-lg shadow-emerald-500/5 w-full md:w-auto overflow-hidden"
+                    className="group relative flex items-center gap-4 px-6 py-5 bg-emerald-500/10 hover:bg-emerald-500/20 border-2 border-emerald-500/20 rounded-3xl transition-all shadow-lg shadow-emerald-500/5 w-full overflow-hidden"
                   >
-                    <div className="relative">
-                      <MapPinned className="text-emerald-500 group-hover:scale-110 transition-transform" size={28} />
+                    <div className="w-12 h-12 rounded-2xl bg-emerald-500/20 flex items-center justify-center text-emerald-500 shrink-0">
+                      <MapPinned size={24} />
                     </div>
                     <div className="text-left">
-                      <span className="block text-[10px] font-black uppercase tracking-[0.2em] text-emerald-500/60 leading-none mb-1">Localização</span>
-                      <span className="block text-sm font-black uppercase tracking-widest text-emerald-600 dark:text-emerald-400">Alterar Cidade</span>
+                      <span className="block text-[9px] font-black uppercase tracking-[0.2em] text-emerald-500/60 leading-none mb-1">Localização</span>
+                      <span className="block text-xs font-black uppercase tracking-widest text-emerald-600 dark:text-emerald-400">Alterar Cidade</span>
+                    </div>
+                  </button>
+                </MotionDiv>
+
+                <MotionDiv whileHover={{ y: -5 }} whileTap={{ scale: 0.95 }}>
+                  <button 
+                    onClick={onOpenFreeRegistration}
+                    className="group relative flex items-center gap-4 px-6 py-5 bg-emerald-600 text-white rounded-3xl shadow-xl shadow-emerald-600/20 transition-all w-full overflow-hidden"
+                  >
+                    <div className="w-12 h-12 rounded-2xl bg-white/20 flex items-center justify-center text-white shrink-0">
+                      <Plus size={24} />
+                    </div>
+                    <div className="text-left">
+                      <span className="block text-[9px] font-black uppercase tracking-[0.2em] text-white/60 leading-none mb-1">Gratuito</span>
+                      <span className="block text-xs font-black uppercase tracking-widest">Cadastro Grátis</span>
                     </div>
                   </button>
                 </MotionDiv>
@@ -733,81 +931,133 @@ const HomePage = ({ companies, alerts, banners, favorites, toggleFavorite, curre
             </MotionDiv>
           )}
         </AnimatePresence>
-        
+
         <div className="max-w-2xl mx-auto relative group">
-          <div className="bg-white dark:bg-emerald-900 border border-emerald-50 dark:border-emerald-800 rounded-2xl md:rounded-[2rem] p-1.5 md:p-2 flex items-center shadow-xl md:shadow-2xl transition-all group-focus-within:ring-4 ring-emerald-500/10">
+          <div className="bg-white dark:bg-emerald-900 border border-emerald-50 dark:border-emerald-800 rounded-2xl md:rounded-[2.5rem] p-2 md:p-3 flex items-center shadow-xl md:shadow-2xl transition-all group-focus-within:ring-4 ring-emerald-500/10">
             <Search className="ml-4 md:ml-6 text-emerald-300 dark:text-emerald-600" size={24} />
             <input 
               type="text" 
               placeholder="O que você está procurando?" 
               value={search}
               onChange={e => setSearch(e.target.value)}
+              onKeyDown={e => e.key === 'Enter' && handleSearch()}
               className="w-full bg-transparent py-4 md:py-5 px-3 md:px-4 outline-none text-emerald-950 dark:text-emerald-50 font-bold placeholder:text-emerald-900/20 dark:placeholder:text-emerald-50/10 text-base md:text-lg" 
             />
-            {search.length > 0 && (
+            <div className="flex items-center gap-2 mr-2">
+              {search.length > 0 && (
+                <button 
+                  onClick={handleClear}
+                  className="p-3 bg-emerald-50 dark:bg-emerald-800 rounded-2xl text-emerald-400 hover:text-emerald-600 transition-colors"
+                  title="Limpar"
+                >
+                  <X size={20} />
+                </button>
+              )}
               <button 
-                onClick={() => setSearch('')}
-                className="mr-4 p-2 bg-emerald-50 dark:bg-emerald-800 rounded-full text-emerald-400 hover:text-emerald-600 transition-colors"
+                onClick={handleSearch}
+                className="px-6 md:px-8 py-4 md:py-5 bg-emerald-600 text-white rounded-xl md:rounded-[1.8rem] font-black uppercase text-[10px] md:text-xs tracking-widest shadow-lg shadow-emerald-600/20 hover:bg-emerald-500 active:scale-95 transition-all"
               >
-                <X size={18} />
+                Pesquisar
               </button>
-            )}
+            </div>
           </div>
-        </div>
-
-        <div className="flex gap-2.5 mt-8 md:mt-10 overflow-x-auto no-scrollbar pb-4 px-2 -mx-5 md:mx-0">
-          <div className="flex gap-2.5 px-5 md:px-0">
-            {categories.map((cat: string) => (
+          
+          {isSearching && (
+            <MotionDiv 
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="mt-6 flex items-center justify-center gap-4"
+            >
+              <p className="text-xs font-black uppercase tracking-widest text-emerald-950/40 dark:text-emerald-100/20">
+                Mostrando resultados para: <span className="text-emerald-600">"{searchTerm}"</span>
+              </p>
               <button 
-                key={cat} 
-                onClick={() => setActiveCategory(cat)}
-                className={`px-6 md:px-8 py-3.5 md:py-4 rounded-xl md:rounded-[1.5rem] font-black text-[9px] md:text-[10px] uppercase tracking-[0.2em] whitespace-nowrap transition-all active:scale-95 ${activeCategory === cat ? 'bg-emerald-600 text-white shadow-xl shadow-emerald-600/20' : 'bg-white dark:bg-emerald-900 text-emerald-950/40 dark:text-emerald-100/20 border border-emerald-50 dark:border-emerald-800 hover:border-emerald-200 dark:hover:border-emerald-600'}`}
+                onClick={handleClear}
+                className="px-4 py-2 bg-emerald-50 dark:bg-emerald-900 text-emerald-600 dark:text-emerald-400 rounded-lg text-[10px] font-black uppercase tracking-widest hover:bg-emerald-100 transition-all"
               >
-                {cat}
+                Limpar Pesquisa
               </button>
-            ))}
-          </div>
+            </MotionDiv>
+          )}
         </div>
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 mb-24 md:mb-32">
-        {filtered.map((company: any) => (
-          <MotionDiv 
-            key={company.id} 
-            whileHover={{ y: -8 }}
-            onClick={() => navigate(`/empresa/${company.id}`)}
-            className="group bg-gradient-to-br from-white to-emerald-50/30 dark:from-emerald-900/20 dark:to-emerald-950/40 border border-emerald-100/50 dark:border-emerald-800/50 p-5 md:p-6 rounded-[2rem] md:rounded-[2.5rem] cursor-pointer shadow-sm hover:shadow-2xl hover:from-emerald-50/50 hover:to-white dark:hover:from-emerald-800/20 dark:hover:to-emerald-900/40 active:scale-[0.98] transition-all relative"
-          >
-            <button 
-              onClick={(e) => {
-                e.stopPropagation();
-                toggleFavorite(company.id);
-              }}
-              className={`absolute top-4 left-4 z-10 p-3 backdrop-blur-md rounded-full opacity-0 group-hover:opacity-100 transition-opacity shadow-lg hover:scale-110 active:scale-95 ${favorites.includes(company.id) ? 'bg-red-500 text-white' : 'bg-white/80 dark:bg-emerald-950/80 text-emerald-600 dark:text-emerald-400'}`}
-            >
-              <Heart size={18} className={favorites.includes(company.id) ? 'fill-white' : ''} />
-            </button>
-            <div className="w-full aspect-square bg-white dark:bg-emerald-950/50 rounded-[1.5rem] md:rounded-[2rem] mb-5 md:mb-6 flex items-center justify-center p-5 md:p-6 border border-emerald-50 dark:border-emerald-800/50 group-hover:border-emerald-200 dark:group-hover:border-emerald-700 shadow-inner transition-all overflow-hidden relative">
-              <img src={company.logo} alt={company.name} className="max-w-[85%] max-h-[85%] object-contain mix-blend-multiply dark:mix-blend-normal transform group-hover:scale-110 transition-transform duration-500 relative z-10" loading="lazy" />
-            </div>
-            <div className="space-y-1.5 md:space-y-2 text-left">
-              <span className="text-[7px] md:text-[8px] font-black uppercase text-emerald-500 tracking-[0.2em]">{company.category}</span>
-              <h3 className="text-lg md:text-xl font-black text-emerald-950 dark:text-emerald-50 uppercase truncate leading-tight">{company.name}</h3>
-              <div className="flex items-center gap-2 pt-1 md:pt-2">
-                <div className="w-7 h-7 md:w-8 md:h-8 rounded-full bg-emerald-50 dark:bg-emerald-800 flex items-center justify-center text-emerald-600 dark:text-emerald-400">
-                  <Phone size={12} className="md:w-3.5 md:h-3.5" />
-                </div>
-                <span className="text-[10px] md:text-xs font-bold text-emerald-900/60 dark:text-emerald-100/30">{company.phone}</span>
+        {isRefreshing && filtered.length === 0 ? (
+          Array.from({ length: 8 }).map((_, i) => (
+            <div key={i} className="bg-white dark:bg-emerald-900/20 p-6 rounded-[2.5rem] border border-emerald-50 dark:border-emerald-800 space-y-6">
+              <Skeleton className="w-full aspect-square rounded-[2rem]" />
+              <div className="space-y-3">
+                <Skeleton className="h-2 w-1/3" />
+                <Skeleton className="h-4 w-2/3" />
+                <Skeleton className="h-3 w-1/2" />
               </div>
             </div>
-          </MotionDiv>
-        ))}
+          ))
+        ) : filtered.length === 0 && isSearching ? (
+          <div className="col-span-full py-20 text-center">
+            <div className="w-20 h-20 bg-emerald-50 dark:bg-emerald-900/30 rounded-full flex items-center justify-center text-emerald-300 dark:text-emerald-700 mx-auto mb-6">
+              <Search size={40} />
+            </div>
+            <h3 className="text-xl font-black text-emerald-950 dark:text-emerald-50 uppercase tracking-tight">Nenhum resultado encontrado</h3>
+            <p className="text-xs font-bold text-emerald-900/40 dark:text-emerald-100/20 uppercase tracking-widest mt-2">Tente buscar por outro termo ou categoria</p>
+            <button 
+              onClick={handleClear}
+              className="mt-8 px-8 py-4 bg-emerald-600 text-white rounded-2xl font-black uppercase text-[10px] tracking-widest shadow-xl shadow-emerald-600/20 active:scale-95 transition-all"
+            >
+              Limpar Pesquisa e Voltar
+            </button>
+          </div>
+        ) : (
+          filtered.map((company: any) => (
+            <MotionDiv 
+              key={company.id} 
+              whileHover={{ y: -8 }}
+              onClick={() => navigate(`/empresa/${company.id}`)}
+              className="group bg-gradient-to-br from-white to-emerald-50/30 dark:from-emerald-900/20 dark:to-emerald-950/40 border border-emerald-100/50 dark:border-emerald-800/50 p-5 md:p-6 rounded-[2rem] md:rounded-[2.5rem] cursor-pointer shadow-sm hover:shadow-2xl hover:from-emerald-50/50 hover:to-white dark:hover:from-emerald-800/20 dark:hover:to-emerald-900/40 active:scale-[0.98] transition-all relative"
+            >
+            <div className="absolute top-4 right-4 z-10 flex flex-col gap-2">
+              <button 
+                onClick={(e) => {
+                  e.stopPropagation();
+                  toggleFavorite(company.id);
+                }}
+                className={`p-3 backdrop-blur-md rounded-full opacity-0 group-hover:opacity-100 transition-all shadow-lg hover:scale-110 active:scale-95 ${favorites.includes(company.id) ? 'bg-red-500 text-white' : 'bg-white/80 dark:bg-emerald-950/80 text-emerald-600 dark:text-emerald-400'}`}
+              >
+                <Heart size={18} className={favorites.includes(company.id) ? 'fill-white' : ''} />
+              </button>
+              <button 
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onShare(company);
+                }}
+                className="p-3 backdrop-blur-md rounded-full opacity-0 group-hover:opacity-100 transition-all shadow-lg hover:scale-110 active:scale-95 bg-white/80 dark:bg-emerald-950/80 text-emerald-600 dark:text-emerald-400"
+              >
+                <Share size={18} />
+              </button>
+            </div>
+              <div className="w-full aspect-square bg-white dark:bg-emerald-950/50 rounded-[1.5rem] md:rounded-[2rem] mb-5 md:mb-6 flex items-center justify-center p-5 md:p-6 border border-emerald-50 dark:border-emerald-800/50 group-hover:border-emerald-200 dark:group-hover:border-emerald-700 shadow-inner transition-all overflow-hidden relative">
+                <img src={company.logo} alt={company.name} className="max-w-[85%] max-h-[85%] object-contain mix-blend-multiply dark:mix-blend-normal transform group-hover:scale-110 transition-transform duration-500 relative z-10" loading="lazy" />
+              </div>
+              <div className="space-y-1.5 md:space-y-2 text-left">
+                <span className="text-[7px] md:text-[8px] font-black uppercase text-emerald-500 tracking-[0.2em]">{company.category}</span>
+                <h3 className="text-lg md:text-xl font-black text-emerald-950 dark:text-emerald-50 uppercase truncate leading-tight">{company.name}</h3>
+                <div className="flex items-center gap-2 pt-1 md:pt-2">
+                  <div className="w-7 h-7 md:w-8 md:h-8 rounded-full bg-emerald-50 dark:bg-emerald-800 flex items-center justify-center text-emerald-600 dark:text-emerald-400">
+                    <Phone size={12} className="md:w-3.5 md:h-3.5" />
+                  </div>
+                  <span className="text-[10px] md:text-xs font-bold text-emerald-900/60 dark:text-emerald-100/30">{company.phone}</span>
+                </div>
+              </div>
+            </MotionDiv>
+          ))
+        )}
       </div>
     </MotionDiv>
   );
 };
 
-const DetailsPage = ({ companies, favorites, toggleFavorite }: any) => {
+const DetailsPage = ({ companies, favorites, toggleFavorite, onShare }: any) => {
   const { id } = useParams();
   const navigate = useNavigate();
   const company = companies.find((c: any) => c.id === id);
@@ -838,13 +1088,22 @@ const DetailsPage = ({ companies, favorites, toggleFavorite }: any) => {
               <span className="text-[10px] font-black uppercase text-emerald-500 tracking-[0.3em] mb-2 block">{company.category}</span>
               <h1 className="text-3xl md:text-5xl font-black text-emerald-950 dark:text-emerald-50 uppercase tracking-tighter leading-none">{company.name}</h1>
             </div>
-            <button 
-              onClick={() => toggleFavorite(company.id)}
-              className={`flex items-center gap-3 px-6 py-4 rounded-2xl font-black uppercase text-xs tracking-widest transition-all active:scale-95 ${favorites.includes(company.id) ? 'bg-red-500 text-white shadow-xl shadow-red-500/20' : 'bg-emerald-50 dark:bg-emerald-800 text-emerald-600 dark:text-emerald-400'}`}
-            >
-              <Heart size={20} className={favorites.includes(company.id) ? 'fill-white' : ''} />
-              {favorites.includes(company.id) ? 'Favoritado' : 'Favoritar'}
-            </button>
+            <div className="flex flex-wrap items-center gap-3">
+              <button 
+                onClick={() => toggleFavorite(company.id)}
+                className={`flex items-center gap-3 px-6 py-4 rounded-2xl font-black uppercase text-xs tracking-widest transition-all active:scale-95 ${favorites.includes(company.id) ? 'bg-red-500 text-white shadow-xl shadow-red-500/20' : 'bg-emerald-50 dark:bg-emerald-800 text-emerald-600 dark:text-emerald-400'}`}
+              >
+                <Heart size={20} className={favorites.includes(company.id) ? 'fill-white' : ''} />
+                {favorites.includes(company.id) ? 'Favoritado' : 'Favoritar'}
+              </button>
+              <button 
+                onClick={() => onShare(company)}
+                className="flex items-center gap-3 px-6 py-4 bg-emerald-50 dark:bg-emerald-800 text-emerald-600 dark:text-emerald-400 rounded-2xl font-black uppercase text-xs tracking-widest transition-all active:scale-95"
+              >
+                <Share size={20} />
+                Compartilhar
+              </button>
+            </div>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
@@ -1109,21 +1368,20 @@ const PlantaoPage = ({ onCall }: { onCall: OnCallDuty | null }) => {
 const PlansPage = ({ adminPhone }: { adminPhone: string }) => {
   const plans = [
     {
-      name: 'Essencial',
-      features: ['Nome da Empresa', 'Telefone de Contato', 'Categoria no Guia', 'Endereço Básico'],
-      highlight: false,
-      icon: Zap
-    },
-    {
-      name: 'Premium',
-      features: ['Logomarca em Destaque', 'Link Direto WhatsApp', 'Redes Sociais', 'Descrição Completa', 'Prioridade na Busca'],
+      name: 'Plano Único Premium',
+      price: '29,90',
+      features: [
+        'Logomarca em Destaque',
+        'Link Direto WhatsApp',
+        'Redes Sociais Completas',
+        'Descrição Detalhada',
+        'Prioridade Máxima na Busca',
+        'Banner Rotativo no Topo',
+        'Notificações de Alerta',
+        'Suporte Prioritário 24h',
+        'Estatísticas de Acessos'
+      ],
       highlight: true,
-      icon: Gem
-    },
-    {
-      name: 'Elite',
-      features: ['Tudo do Premium', 'Banner Rotativo Topo', 'Notificações Push', 'Suporte Prioritário', 'Estatísticas de Cliques'],
-      highlight: false,
       icon: Rocket
     }
   ];
@@ -1131,46 +1389,55 @@ const PlansPage = ({ adminPhone }: { adminPhone: string }) => {
   return (
     <MotionDiv {...fadeUp} className="max-w-7xl mx-auto px-6 py-12 md:py-20">
       <div className="text-center mb-20">
-        <h1 className="text-4xl md:text-7xl font-black text-emerald-950 dark:text-emerald-50 uppercase tracking-tighter leading-none mb-6">Planos e <br /><span className="text-emerald-600">Vantagens</span></h1>
-        <p className="text-xs font-black uppercase tracking-[0.4em] text-emerald-950/30 dark:text-emerald-100/20">Destaque seu negócio para toda a cidade</p>
+        <h1 className="text-4xl md:text-7xl font-black text-emerald-950 dark:text-emerald-50 uppercase tracking-tighter leading-none mb-6">Plano <br /><span className="text-emerald-600">Parceiro</span></h1>
+        <p className="text-xs font-black uppercase tracking-[0.4em] text-emerald-950/30 dark:text-emerald-100/20">Todas as funcionalidades por um preço único</p>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+      <div className="flex justify-center">
         {plans.map((plan) => (
           <div 
             key={plan.name}
-            className={`relative p-8 md:p-12 rounded-[3rem] border-2 transition-all hover:scale-[1.02] flex flex-col ${plan.highlight ? 'bg-emerald-950 border-emerald-500 shadow-2xl shadow-emerald-500/20 text-white' : 'bg-white dark:bg-emerald-900/20 border-emerald-50 dark:border-emerald-800 text-emerald-950 dark:text-emerald-50'}`}
+            className="relative w-full max-w-xl p-8 md:p-16 rounded-[3rem] border-2 transition-all hover:scale-[1.01] flex flex-col bg-emerald-950 border-emerald-500 shadow-3xl shadow-emerald-500/20 text-white"
           >
-            {plan.highlight && (
-              <div className="absolute -top-5 left-1/2 -translate-x-1/2 bg-emerald-500 text-white px-6 py-2 rounded-full text-[10px] font-black uppercase tracking-widest shadow-lg">
-                Mais Popular
-              </div>
-            )}
-
-            <div className={`w-16 h-16 rounded-2xl flex items-center justify-center mb-10 ${plan.highlight ? 'bg-emerald-500 text-white' : 'bg-emerald-50 dark:bg-emerald-950 text-emerald-600'}`}>
-              <plan.icon size={32} />
+            <div className="absolute -top-5 left-1/2 -translate-x-1/2 bg-emerald-500 text-white px-8 py-2.5 rounded-full text-[10px] font-black uppercase tracking-widest shadow-lg">
+              Melhor Custo-Benefício
             </div>
 
-            <h3 className="text-2xl font-black uppercase tracking-tight mb-10">{plan.name}</h3>
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-8 mb-12">
+              <div className="flex items-center gap-6">
+                <div className="w-20 h-20 rounded-3xl bg-emerald-500 text-white flex items-center justify-center shadow-xl shadow-emerald-500/20">
+                  <plan.icon size={40} />
+                </div>
+                <div className="text-left">
+                  <h3 className="text-2xl md:text-3xl font-black uppercase tracking-tight leading-none">{plan.name}</h3>
+                  <p className="text-[10px] font-black uppercase tracking-widest text-emerald-400 mt-2">Acesso Total ao App</p>
+                </div>
+              </div>
+              <div className="text-left md:text-right">
+                <span className="text-emerald-500 text-sm font-black uppercase">R$</span>
+                <span className="text-5xl font-black ml-1">{plan.price}</span>
+                <span className="text-emerald-500/60 text-[10px] font-black uppercase block">Mensal</span>
+              </div>
+            </div>
 
-            <div className="space-y-4 mb-12 flex-1">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-5 mb-16">
               {plan.features.map((feature) => (
-                <div key={feature} className="flex items-center gap-3">
-                  <div className={`w-5 h-5 rounded-full flex items-center justify-center shrink-0 ${plan.highlight ? 'bg-emerald-500/20 text-emerald-400' : 'bg-emerald-50 dark:bg-emerald-950 text-emerald-600'}`}>
-                    <Check size={12} strokeWidth={4} />
+                <div key={feature} className="flex items-center gap-4">
+                  <div className="w-6 h-6 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center shrink-0">
+                    <Check size={14} strokeWidth={4} />
                   </div>
-                  <span className="text-xs font-bold uppercase tracking-wide opacity-80">{feature}</span>
+                  <span className="text-[11px] font-black uppercase tracking-wider opacity-90">{feature}</span>
                 </div>
               ))}
             </div>
 
             <a 
-              href={getWhatsAppLink(adminPhone, `Olá! Gostaria de saber mais sobre o plano ${plan.name} do Guia.`)}
+              href={getWhatsAppLink(adminPhone, `Olá! Gostaria de contratar o Plano Único de R$ 29,90 do Guia.`)}
               target="_blank"
               rel="noopener noreferrer"
-              className={`w-full py-5 rounded-2xl font-black uppercase text-xs tracking-widest text-center transition-all active:scale-95 ${plan.highlight ? 'bg-emerald-500 text-white shadow-xl shadow-emerald-500/20 hover:bg-emerald-400' : 'bg-emerald-50 dark:bg-emerald-800 text-emerald-600 dark:text-emerald-400 hover:bg-emerald-100 dark:hover:bg-emerald-700'}`}
+              className="w-full py-6 bg-emerald-500 text-white rounded-[2rem] font-black uppercase text-sm tracking-widest text-center transition-all active:scale-95 shadow-2xl shadow-emerald-500/40 hover:bg-emerald-400 flex items-center justify-center gap-3"
             >
-              Escolher Plano
+              <Rocket size={20} /> Contratar Agora
             </a>
           </div>
         ))}
@@ -1592,10 +1859,83 @@ const AdminModal = ({ type, item, onClose, onSave, currentCity }: { type: 'compa
   );
 };
 
-const AdminDashboard = ({ companies, alerts, settings, notifications, onCall, banners, onRefresh, isRefreshing, openModal, handleDelete, isModalOpen, setIsModalOpen, modalType, editingItem }: any) => {
+const AdminDashboard = ({ companies, alerts, settings, notifications, onCall, banners, onRefresh, isRefreshing, openModal, handleDelete, isModalOpen, setIsModalOpen, modalType, editingItem, showToast }: any) => {
   const [activeTab, setActiveTab] = useState('companies');
   const [loading, setLoading] = useState(false);
+  const [freeRegistrations, setFreeRegistrations] = useState<any[]>([]);
   const navigate = useNavigate();
+
+  useEffect(() => {
+    fetchFreeRegistrations();
+  }, []);
+
+  const fetchFreeRegistrations = async () => {
+    const { data, error } = await supabase
+      .from('free_registrations')
+      .select('*')
+      .eq('status', 'pending')
+      .order('created_at', { ascending: false });
+    
+    if (!error && data) {
+      setFreeRegistrations(data);
+    }
+  };
+
+  const handleApprove = async (reg: any) => {
+    if (!confirm(`Deseja aprovar "${reg.company_name}" e publicar no guia?`)) return;
+    setLoading(true);
+    try {
+      // 1. Inserir na tabela companies
+      const { error: insertError } = await supabase
+        .from('companies')
+        .insert([{
+          city: reg.city,
+          name: reg.company_name,
+          phone: reg.phone,
+          category: reg.category,
+          address: reg.address,
+          logo: 'https://picsum.photos/seed/business/400/400', // Logo padrão
+          is_featured: false
+        }]);
+      
+      if (insertError) throw insertError;
+
+      // 2. Atualizar status para approved
+      const { error: updateError } = await supabase
+        .from('free_registrations')
+        .update({ status: 'approved' })
+        .eq('id', reg.id);
+      
+      if (updateError) throw updateError;
+
+      showToast('Empresa aprovada e publicada com sucesso!');
+      fetchFreeRegistrations();
+      onRefresh();
+    } catch (err: any) {
+      showToast('Erro ao aprovar: ' + err.message, 'error');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleReject = async (id: string) => {
+    if (!confirm('Deseja recusar esta solicitação?')) return;
+    setLoading(true);
+    try {
+      const { error } = await supabase
+        .from('free_registrations')
+        .update({ status: 'rejected' })
+        .eq('id', id);
+      
+      if (error) throw error;
+      showToast('Solicitação recusada.');
+      fetchFreeRegistrations();
+    } catch (err: any) {
+      showToast('Erro ao recusar: ' + err.message, 'error');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleLogout = async () => {
     await supabase.auth.signOut();
@@ -1622,10 +1962,10 @@ const AdminDashboard = ({ companies, alerts, settings, notifications, onCall, ba
         ({ error } = await supabase.from('on_call').insert([data]));
       }
       if (error) throw error;
-      alert('Plantão atualizado com sucesso!');
+      showToast('Plantão atualizado com sucesso!');
       onRefresh();
     } catch (err: any) {
-      alert('Erro ao salvar: ' + err.message);
+      showToast('Erro ao salvar: ' + err.message, 'error');
     } finally {
       setLoading(false);
     }
@@ -1655,10 +1995,10 @@ const AdminDashboard = ({ companies, alerts, settings, notifications, onCall, ba
         ({ error } = await supabase.from('admin_settings').insert([data]));
       }
       if (error) throw error;
-      alert('Configurações atualizadas com sucesso!');
+      showToast('Configurações atualizadas com sucesso!');
       onRefresh();
     } catch (err: any) {
-      alert('Erro ao salvar: ' + err.message);
+      showToast('Erro ao salvar: ' + err.message, 'error');
     } finally {
       setLoading(false);
     }
@@ -1666,6 +2006,7 @@ const AdminDashboard = ({ companies, alerts, settings, notifications, onCall, ba
 
   const tabs = [
     { id: 'companies', label: 'Empresas', icon: Database },
+    { id: 'requests', label: 'Solicitações', icon: PlusCircle },
     { id: 'banners', label: 'Banners', icon: ImageIcon },
     { id: 'alerts', label: 'Alertas', icon: Megaphone },
     { id: 'oncall', label: 'Plantão', icon: HeartPulse },
@@ -1706,6 +2047,11 @@ const AdminDashboard = ({ companies, alerts, settings, notifications, onCall, ba
           >
             <tab.icon size={18} />
             {tab.label}
+            {tab.id === 'requests' && freeRegistrations.length > 0 && (
+              <span className="bg-red-500 text-white text-[8px] px-1.5 py-0.5 rounded-full animate-pulse">
+                {freeRegistrations.length}
+              </span>
+            )}
           </button>
         ))}
       </div>
@@ -1751,6 +2097,56 @@ const AdminDashboard = ({ companies, alerts, settings, notifications, onCall, ba
                 </div>
               ))}
             </div>
+          </div>
+        )}
+
+        {activeTab === 'requests' && (
+          <div className="space-y-8">
+            <div className="text-left">
+              <h2 className="text-2xl font-black uppercase text-emerald-950 dark:text-emerald-50">Solicitações Pendentes</h2>
+              <p className="text-xs font-bold text-emerald-500/60 uppercase tracking-widest mt-1">Cadastros gratuitos aguardando revisão</p>
+            </div>
+            
+            {freeRegistrations.length === 0 ? (
+              <div className="py-20 text-center bg-emerald-50/30 dark:bg-emerald-950/20 rounded-[2rem] border border-dashed border-emerald-200 dark:border-emerald-800">
+                <CheckCircle2 className="mx-auto text-emerald-200 mb-4" size={48} />
+                <p className="text-emerald-950/40 dark:text-emerald-100/20 font-black uppercase text-xs tracking-widest">Nenhuma solicitação pendente</p>
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 gap-4">
+                {freeRegistrations.map((reg) => (
+                  <div key={reg.id} className="p-6 bg-emerald-50/50 dark:bg-emerald-950/50 rounded-2xl border border-emerald-50 dark:border-emerald-800 flex flex-col md:flex-row md:items-center justify-between gap-6">
+                    <div className="text-left space-y-1">
+                      <div className="flex items-center gap-2">
+                        <span className="px-2 py-1 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 text-[8px] font-black uppercase tracking-widest rounded-md">{reg.category}</span>
+                        <span className="text-[8px] font-black uppercase text-emerald-950/30 dark:text-emerald-100/20 tracking-widest">{new Date(reg.created_at).toLocaleDateString()}</span>
+                      </div>
+                      <h4 className="text-lg font-black uppercase text-emerald-950 dark:text-emerald-50">{reg.company_name}</h4>
+                      <div className="flex flex-wrap gap-x-4 gap-y-1 text-[10px] font-bold text-emerald-900/60 dark:text-emerald-100/40 uppercase tracking-widest">
+                        <span className="flex items-center gap-1"><Phone size={12} /> {reg.phone}</span>
+                        <span className="flex items-center gap-1"><MapPin size={12} /> {reg.address}</span>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-2 shrink-0">
+                      <button 
+                        onClick={() => handleApprove(reg)}
+                        disabled={loading}
+                        className="flex-grow md:flex-grow-0 flex items-center justify-center gap-2 px-6 py-3 bg-emerald-600 text-white rounded-xl font-black uppercase text-[10px] tracking-widest shadow-lg shadow-emerald-600/20 active:scale-95 transition-all disabled:opacity-50"
+                      >
+                        <Check size={16} /> Aprovar
+                      </button>
+                      <button 
+                        onClick={() => handleReject(reg.id)}
+                        disabled={loading}
+                        className="p-3 bg-red-500/10 border border-red-500/20 rounded-xl text-red-500 hover:bg-red-500 hover:text-white transition-all active:scale-90 shadow-sm disabled:opacity-50"
+                      >
+                        <X size={18} />
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
         )}
 
@@ -1992,11 +2388,33 @@ const App = () => {
   const [showWelcome, setShowWelcome] = useState(true);
   const [showMenu, setShowMenu] = useState(false);
   const [isRefreshing, setIsRefreshing] = useState(false);
+  const [toast, setToast] = useState<{ message: string, type?: 'success' | 'error' } | null>(null);
+
+  const showToast = (message: string, type: 'success' | 'error' = 'success') => {
+    setToast({ message, type });
+  };
+
+  const handleShare = async (company: any) => {
+    const shareData = {
+      title: company.name,
+      text: `Confira ${company.name} no Guia Digital!`,
+      url: `${window.location.origin}/#/empresa/${company.id}`
+    };
+
+    try {
+      if (navigator.share) {
+        await navigator.share(shareData);
+      } else {
+        await navigator.clipboard.writeText(shareData.url);
+        showToast('Link copiado!');
+      }
+    } catch (err) {
+      console.error('Erro ao compartilhar:', err);
+    }
+  };
   const [user, setUser] = useState<any>(null);
-  const [theme, setTheme] = useState<'light' | 'dark'>(() => {
-    const saved = localStorage.getItem('theme');
-    return (saved === 'dark' || saved === 'light') ? saved : 'light';
-  });
+  const theme = 'light';
+  const setTheme = () => {};
   const [favorites, setFavorites] = useState<string[]>(() => {
     const saved = localStorage.getItem('favorites');
     return saved ? JSON.parse(saved) : [];
@@ -2006,6 +2424,7 @@ const App = () => {
     return localStorage.getItem('selectedCity') || '';
   });
   const [isCityModalOpen, setIsCityModalOpen] = useState(false);
+  const [isFreeRegistrationModalOpen, setIsFreeRegistrationModalOpen] = useState(false);
 
   const [showCityModal, setShowCityModal] = useState(false);
 
@@ -2076,10 +2495,8 @@ const App = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    localStorage.setItem('theme', theme);
-    if (theme === 'dark') document.documentElement.classList.add('dark');
-    else document.documentElement.classList.remove('dark');
-  }, [theme]);
+    document.documentElement.classList.remove('dark');
+  }, []);
 
   const fetchData = async () => {
     if (!selectedCity) return;
@@ -2150,7 +2567,7 @@ const App = () => {
   }, [selectedCity]);
 
   return (
-    <div className={`min-h-screen flex flex-col bg-[#fafafa] dark:bg-[#011c16] font-sans pb-safe transition-colors duration-300`}>
+    <div className={`min-h-screen flex flex-col bg-[#fafafa] font-sans pb-safe transition-colors duration-300`}>
       <AnimatePresence mode="wait">
         {(!selectedCity || showWelcome) && (
           <WelcomeScreen 
@@ -2186,6 +2603,7 @@ const App = () => {
         onEnablePush={handleEnablePush}
         currentCity={selectedCity}
         onCityChange={() => setIsCityModalOpen(true)}
+        onOpenFreeRegistration={() => setIsFreeRegistrationModalOpen(true)}
       />
 
       <AnimatePresence>
@@ -2197,43 +2615,50 @@ const App = () => {
             currentCity={selectedCity} 
           />
         )}
+        {isFreeRegistrationModalOpen && (
+          <FreeRegistrationModal 
+            isOpen={isFreeRegistrationModalOpen} 
+            onClose={() => setIsFreeRegistrationModalOpen(false)} 
+            currentCity={selectedCity}
+          />
+        )}
       </AnimatePresence>
       
       {!showWelcome && !isAdminPath && !isLoginPage && <BackToTop />}
       
+      <AnimatePresence>
+        {toast && <Toast message={toast.message} type={toast.type} onClose={() => setToast(null)} />}
+      </AnimatePresence>
+
       {!showWelcome && !isAdminPath && !isLoginPage && (
-        <header className="h-20 md:h-28 bg-emerald-950/95 backdrop-blur-2xl sticky top-0 z-[100] px-5 md:px-12 flex items-center justify-between border-b border-white/5">
-          <div className="flex items-center gap-4">
-             <button onClick={() => setShowMenu(true)} className="p-3 bg-white/5 border border-white/10 rounded-2xl text-emerald-100 active:scale-90 transition-all hover:bg-white/10">
-               <MenuIcon size={24} strokeWidth={2.5} />
-             </button>
-             <Link to="/" className="active:scale-95 transition-transform"><AppLogo light size="sm" /></Link>
-             
-             <button 
-               onClick={() => setIsCityModalOpen(true)}
-               className="hidden sm:flex items-center gap-2 px-4 py-2 bg-white/5 border border-white/10 rounded-xl text-emerald-400 hover:bg-white/10 transition-all ml-2"
-             >
-               <MapPin size={14} />
-               <span className="text-[10px] font-black uppercase tracking-widest">{cityName}</span>
-               <ChevronDown size={14} />
-             </button>
-          </div>
-          
-          <div className="flex items-center gap-2">
-             <div className="hidden lg:flex gap-6 mr-8">
-                <Link to="/sobre" className="text-emerald-100/60 hover:text-white font-black uppercase text-[10px] tracking-widest transition-colors">Quem Somos</Link>
-             </div>
-             <div className="hidden md:flex gap-3 mr-4">
-                <Link to="/planos" className="flex items-center gap-2 bg-amber-500/10 text-amber-400 px-6 py-3.5 rounded-2xl font-black uppercase text-[10px] tracking-widest border border-amber-500/20 active:scale-95 transition-all">
-                  <Star size={16} className="fill-amber-400/20" /> Seja Parceiro
+        <header className="sticky top-0 z-[1000] w-full px-4 md:px-6 py-4 transition-all">
+          <div className="max-w-7xl mx-auto grid grid-cols-3 items-center bg-white/70 backdrop-blur-xl border border-white/20 px-4 md:px-6 py-3 rounded-[2rem] shadow-xl">
+            <div className="flex items-center">
+              <button 
+                onClick={() => setShowMenu(true)}
+                className="w-10 h-10 md:w-12 md:h-12 bg-emerald-600 text-white rounded-2xl flex items-center justify-center hover:bg-emerald-500 transition-all active:scale-90 shadow-lg shadow-emerald-600/20"
+              >
+                <MenuIcon className="w-5 h-5 md:w-6 md:h-6" />
+              </button>
+            </div>
+
+            <div className="flex justify-center">
+              <Link to="/" className="active:scale-95 transition-transform">
+                <AppLogo size="sm" />
+              </Link>
+            </div>
+
+            <div className="flex justify-end">
+              {location.pathname !== '/' && (
+                <Link 
+                  to="/"
+                  className="flex items-center gap-2 px-4 py-2 bg-emerald-50 text-emerald-600 rounded-xl font-black uppercase text-[10px] tracking-widest hover:bg-emerald-100 transition-all active:scale-95"
+                >
+                  <Home size={14} />
+                  <span className="hidden sm:inline">Início</span>
                 </Link>
-                <Link to="/plantao" className="flex items-center gap-2 bg-red-500/10 text-red-400 px-6 py-3.5 rounded-2xl font-black uppercase text-[10px] tracking-widest border border-red-500/20 active:scale-95 transition-all">
-                  <HeartPulse size={16} /> Plantão
-                </Link>
-             </div>
-             <Link to={user ? "/admin" : "/login"} className="w-12 h-12 bg-white/5 border border-white/10 rounded-2xl text-emerald-100 flex items-center justify-center hover:bg-emerald-600 hover:text-white transition-all active:scale-95 shadow-sm">
-               <User size={20} />
-             </Link>
+              )}
+            </div>
           </div>
         </header>
       )}
@@ -2259,14 +2684,14 @@ const App = () => {
         {!showWelcome && (
           <AnimatePresence mode="wait">
             <Routes location={location} key={location.pathname}>
-              <Route path="/" element={<HomePage companies={companies} alerts={alerts} banners={banners} favorites={favorites} toggleFavorite={toggleFavorite} currentCity={selectedCity} onChangeCity={() => setIsCityModalOpen(true)} isAdmin={!!user} onEditAlert={(item: any) => openModal('alert', item)} onDeleteAlert={(id: string) => handleDelete('alerts', id)} />} />
-              <Route path="/empresa/:id" element={<DetailsPage companies={companies} favorites={favorites} toggleFavorite={toggleFavorite} />} />
+              <Route path="/" element={<HomePage companies={companies} alerts={alerts} banners={banners} favorites={favorites} toggleFavorite={toggleFavorite} currentCity={selectedCity} onChangeCity={() => setIsCityModalOpen(true)} isAdmin={!!user} onEditAlert={(item: any) => openModal('alert', item)} onDeleteAlert={(id: string) => handleDelete('alerts', id)} onOpenFreeRegistration={() => setIsFreeRegistrationModalOpen(true)} onShare={handleShare} isRefreshing={isRefreshing} />} />
+              <Route path="/empresa/:id" element={<DetailsPage companies={companies} favorites={favorites} toggleFavorite={toggleFavorite} onShare={handleShare} />} />
               <Route path="/favoritos" element={<FavoritesPage companies={companies} favorites={favorites} toggleFavorite={toggleFavorite} />} />
               <Route path="/plantao" element={<PlantaoPage onCall={onCall} />} />
               <Route path="/planos" element={<PlansPage adminPhone={settings.phone} />} />
               <Route path="/sobre" element={<AboutPage />} />
               <Route path="/login" element={<LoginPage />} />
-              <Route path="/admin" element={user ? <AdminDashboard companies={companies} alerts={alerts} settings={settings} notifications={notifications} onCall={onCall} banners={banners} onRefresh={fetchData} isRefreshing={isRefreshing} openModal={openModal} handleDelete={handleDelete} isModalOpen={isModalOpen} setIsModalOpen={setIsModalOpen} modalType={modalType} editingItem={editingItem} /> : <Navigate to="/login" />} />
+              <Route path="/admin" element={user ? <AdminDashboard companies={companies} alerts={alerts} settings={settings} notifications={notifications} onCall={onCall} banners={banners} onRefresh={fetchData} isRefreshing={isRefreshing} openModal={openModal} handleDelete={handleDelete} isModalOpen={isModalOpen} setIsModalOpen={setIsModalOpen} modalType={modalType} editingItem={editingItem} showToast={showToast} /> : <Navigate to="/login" />} />
               <Route path="*" element={<Navigate to="/" replace />} />
             </Routes>
           </AnimatePresence>
@@ -2274,29 +2699,29 @@ const App = () => {
       </main>
 
       {!showWelcome && !isAdminPath && !isLoginPage && (
-        <footer className="bg-emerald-950 border-t border-emerald-900/50 py-8 px-6 text-center">
-          <div className="max-w-5xl mx-auto flex flex-col items-center gap-6">
-            <AppLogo light size="sm" />
+        <footer className="bg-white border-t border-emerald-100 py-6 px-6 text-center">
+          <div className="max-w-5xl mx-auto flex flex-col items-center gap-4">
+            <AppLogo size="sm" />
             
-            <div className="bg-white/5 px-6 py-4 rounded-[1.5rem] border border-white/10 inline-flex flex-col items-center">
-              <p className="text-emerald-400 text-[10px] font-black uppercase tracking-widest mb-2">Quer ver sua empresa aqui?</p>
+            <div className="bg-emerald-50 px-5 py-3 rounded-2xl border border-emerald-100 inline-flex flex-col items-center">
+              <p className="text-emerald-600 text-[9px] font-black uppercase tracking-widest mb-1">Quer ver sua empresa aqui?</p>
               <Link 
                 to="/planos"
-                className="flex items-center gap-3 text-white font-black uppercase text-xs hover:text-emerald-400 transition-colors"
+                className="flex items-center gap-2 text-emerald-950 font-black uppercase text-[10px] hover:text-emerald-600 transition-colors"
               >
-                <Award size={18} className="text-emerald-500" /> Ver Vantagens e Planos
+                <Award size={14} className="text-emerald-500" /> Ver Vantagens e Planos
               </Link>
             </div>
 
-            <div className="flex flex-wrap justify-center gap-x-8 gap-y-4 pt-6 w-full border-t border-white/5">
-              <Link to="/sobre" className="text-emerald-100/40 text-[10px] font-black uppercase tracking-widest hover:text-emerald-400 transition-colors">Quem Somos</Link>
-              <Link to="/planos" className="text-emerald-100/40 text-[10px] font-black uppercase tracking-widest hover:text-emerald-400 transition-colors">Anuncie</Link>
-              <Link to="/plantao" className="text-emerald-100/40 text-[10px] font-black uppercase tracking-widest hover:text-emerald-400 transition-colors">Plantão</Link>
+            <div className="flex flex-wrap justify-center gap-x-6 gap-y-2 pt-4 w-full border-t border-emerald-50">
+              <Link to="/sobre" className="text-emerald-950/40 text-[9px] font-black uppercase tracking-widest hover:text-emerald-600 transition-colors">Quem Somos</Link>
+              <Link to="/planos" className="text-emerald-950/40 text-[9px] font-black uppercase tracking-widest hover:text-emerald-600 transition-colors">Anuncie</Link>
+              <Link to="/plantao" className="text-emerald-950/40 text-[9px] font-black uppercase tracking-widest hover:text-emerald-600 transition-colors">Plantão</Link>
             </div>
 
-            <div className="space-y-2 pt-4 w-full">
-              <p className="text-emerald-100/40 text-[8px] font-bold uppercase tracking-[0.4em] px-4 leading-relaxed">{settings.address}</p>
-              <p className="text-emerald-100/20 text-[7px] font-bold uppercase tracking-[0.3em]">© 2024 Guia BC • Bernardino de Campos, SP</p>
+            <div className="space-y-1 pt-2 w-full">
+              <p className="text-emerald-950/30 text-[8px] font-bold uppercase tracking-[0.3em] px-4 leading-relaxed">{settings.address}</p>
+              <p className="text-emerald-950/20 text-[7px] font-bold uppercase tracking-[0.2em]">© 2024 Guia Digital • Bernardino de Campos, SP</p>
             </div>
           </div>
         </footer>
