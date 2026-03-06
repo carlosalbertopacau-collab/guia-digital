@@ -190,49 +190,67 @@ const AppLogo = ({ size = "md", animate = false }: { size?: "sm" | "md" | "lg", 
   const isLarge = size === "lg";
   const isSmall = size === "sm";
   
-  const iconBoxSize = isLarge ? 'w-24 h-24 md:w-32 md:h-32' : isSmall ? 'w-10 h-10' : 'w-12 h-12 md:w-14 md:h-14';
-  const iconSize = isLarge ? 56 : isSmall ? 20 : 26;
-  const titleSize = isLarge ? 'text-4xl md:text-5xl' : isSmall ? 'text-lg' : 'text-xl md:text-2xl';
-  const subSize = isLarge ? 'text-xs' : 'text-[8px] md:text-[9px]';
+  const iconBoxSize = isLarge ? 'w-28 h-28 md:w-36 md:h-36' : isSmall ? 'w-10 h-10' : 'w-14 h-14 md:w-16 md:h-16';
+  const iconSize = isLarge ? 64 : isSmall ? 20 : 32;
+  const titleSize = isLarge ? 'text-5xl md:text-7xl' : isSmall ? 'text-xl' : 'text-2xl md:text-3xl';
+  const subSize = isLarge ? 'text-sm' : 'text-[9px] md:text-[10px]';
 
   return (
-    <div className={`flex items-center gap-4 md:gap-5 group select-none text-emerald-950`}>
+    <div className={`flex ${isLarge ? 'flex-col items-center text-center' : 'items-center text-left'} gap-4 md:gap-6 group select-none`}>
       <div className={`relative ${iconBoxSize}`}>
-        <div className={`absolute inset-0 rounded-[30%] rotate-6 opacity-20 blur-lg transition-transform group-hover:rotate-12 bg-emerald-600`} />
+        {/* Outer Glow */}
+        <div className={`absolute inset-0 rounded-[32%] rotate-6 opacity-30 blur-xl transition-all duration-700 group-hover:rotate-12 group-hover:scale-110 bg-emerald-500`} />
+        <div className={`absolute inset-0 rounded-[32%] -rotate-3 opacity-20 blur-2xl transition-all duration-700 group-hover:-rotate-6 group-hover:scale-125 bg-teal-400`} />
+        
         <MotionDiv 
-          animate={animate ? { rotateY: 360, rotateZ: [0, 5, 0, -5, 0] } : {}}
-          transition={animate ? { rotateY: { duration: 3, repeat: Infinity, ease: "linear" }, rotateZ: { duration: 4, repeat: Infinity } } : {}}
-          className={`relative h-full w-full rounded-[30%] flex items-center justify-center shadow-2xl transition-all duration-500 overflow-hidden border-b-4 bg-gradient-to-br from-emerald-600 to-emerald-800 border-emerald-900 shadow-emerald-900/30`}
+          animate={animate ? { 
+            rotateY: [0, 360],
+            y: [0, -10, 0]
+          } : {}}
+          transition={animate ? { 
+            rotateY: { duration: 6, repeat: Infinity, ease: "linear" },
+            y: { duration: 4, repeat: Infinity, ease: "easeInOut" }
+          } : {}}
+          className={`relative h-full w-full rounded-[32%] flex items-center justify-center shadow-2xl transition-all duration-500 overflow-hidden border-b-8 bg-gradient-to-br from-emerald-500 via-emerald-600 to-teal-700 border-emerald-900/40 shadow-emerald-900/40`}
         >
-          <div className="absolute top-0 left-0 w-full h-1/2 bg-white/10 -skew-y-12" />
+          {/* Glass Shine */}
+          <div className="absolute top-0 left-0 w-full h-1/2 bg-white/20 -skew-y-12 transform -translate-y-4" />
+          
           <div className="relative z-10 flex flex-col items-center">
-            <MapPinned size={iconSize} strokeWidth={2.5} className="text-white drop-shadow-md" />
+            <MapPinned size={iconSize} strokeWidth={2.5} className="text-white drop-shadow-[0_4px_8px_rgba(0,0,0,0.3)]" />
             <MotionDiv 
-              animate={{ opacity: [0.4, 1, 0.4] }}
+              animate={{ opacity: [0.4, 1, 0.4], scale: [1, 1.2, 1] }}
               transition={{ duration: 2, repeat: Infinity }}
-              className="absolute -top-1 -right-1 w-2 h-2 md:w-3 md:h-3 bg-emerald-300 rounded-full border-2 border-emerald-600 shadow-[0_0_10px_rgba(110,231,183,0.8)]"
+              className="absolute -top-2 -right-2 w-3 h-3 md:w-4 md:h-4 bg-emerald-300 rounded-full border-2 border-emerald-600 shadow-[0_0_15px_rgba(110,231,183,1)]"
             />
           </div>
+
+          {/* Inner Light Sweep */}
+          <MotionDiv 
+            animate={{ x: ['-150%', '150%'] }}
+            transition={{ duration: 3, repeat: Infinity, ease: "easeInOut", repeatDelay: 1 }}
+            className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent skew-x-12"
+          />
         </MotionDiv>
       </div>
-      <div className="flex flex-col text-left">
-        <h1 className={`${titleSize} font-black uppercase tracking-tighter leading-none flex items-center gap-1`}>
-          <span className="text-emerald-950">Guia</span>
-          <span className="relative text-emerald-600">
+
+      <div className="flex flex-col">
+        <h1 className={`${titleSize} font-black uppercase tracking-tighter leading-[0.85] flex items-center gap-2`}>
+          <span className="text-emerald-950 drop-shadow-sm">Guia</span>
+          <span className="relative text-emerald-600 drop-shadow-md italic">
             Digital
             <MotionDiv 
               initial={{ x: '-100%' }}
               animate={{ x: '200%' }}
-              transition={{ duration: 3, repeat: Infinity, ease: "linear" }}
-              className="absolute inset-0 bg-gradient-to-r from-transparent via-white/40 to-transparent skew-x-12 pointer-events-none"
+              transition={{ duration: 4, repeat: Infinity, ease: "linear" }}
+              className="absolute inset-0 bg-gradient-to-r from-transparent via-white/50 to-transparent skew-x-12 pointer-events-none"
             />
           </span>
         </h1>
-        <div className="flex items-center gap-2 mt-1 md:mt-2">
-          <div className="h-[1px] w-4 md:w-6 bg-emerald-900/20" />
-          <span className={`${subSize} font-bold uppercase tracking-[0.4em] opacity-60 text-emerald-800`}>
-            Conectando a Cidade
-          </span>
+        <div className={`flex items-center ${isLarge ? 'justify-center' : 'justify-start'} gap-2 mt-1`}>
+          <div className="h-[1px] w-4 bg-emerald-600/30" />
+          <p className={`${subSize} font-bold uppercase tracking-[0.3em] text-emerald-800/60`}>O Melhor da Cidade</p>
+          <div className="h-[1px] w-4 bg-emerald-600/30" />
         </div>
       </div>
     </div>
@@ -636,7 +654,7 @@ const WelcomeScreen = ({ onComplete, selectedCity, onCitySelect }: { onComplete:
     if (step === 'splash') {
       const timer = setTimeout(() => {
         onComplete();
-      }, 3000);
+      }, 3500);
       return () => clearTimeout(timer);
     }
   }, [onComplete, step]);
@@ -649,97 +667,204 @@ const WelcomeScreen = ({ onComplete, selectedCity, onCitySelect }: { onComplete:
   return (
     <MotionDiv
       initial={{ opacity: 1 }}
-      exit={{ opacity: 0, scale: 1.1, filter: 'blur(20px)' }}
-      transition={{ duration: 0.8, ease: "easeInOut" }}
+      exit={{ opacity: 0, scale: 1.05, filter: 'blur(30px)' }}
+      transition={{ duration: 1, ease: [0.43, 0.13, 0.23, 0.96] }}
       className="fixed inset-0 z-[3000] bg-[#022c22] flex flex-col items-center justify-center overflow-hidden"
     >
+      {/* Immersive Background */}
       <div className="absolute inset-0 pointer-events-none overflow-hidden">
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,_rgba(16,185,129,0.15)_0%,_transparent_70%)]" />
         <MotionDiv
-          animate={{ x: [0, 40, -40, 0], y: [0, -60, 40, 0], scale: [1, 1.2, 0.9, 1] }}
-          transition={{ duration: 15, repeat: Infinity }}
-          className="absolute top-0 left-0 w-[400px] md:w-[600px] h-[400px] md:h-[600px] bg-emerald-500/10 rounded-full blur-[100px] md:blur-[120px]"
+          animate={{ 
+            x: [0, 80, -80, 0], 
+            y: [0, -100, 60, 0], 
+            scale: [1, 1.3, 0.8, 1],
+            opacity: [0.3, 0.6, 0.3]
+          }}
+          transition={{ duration: 20, repeat: Infinity, ease: "easeInOut" }}
+          className="absolute top-[-10%] left-[-10%] w-[600px] md:w-[900px] h-[600px] md:h-[900px] bg-emerald-500/20 rounded-full blur-[120px] md:blur-[160px]"
         />
         <MotionDiv
-          animate={{ x: [0, -30, 30, 0], y: [0, 40, -30, 0] }}
-          transition={{ duration: 20, repeat: Infinity }}
-          className="absolute bottom-0 right-0 w-[500px] md:w-[700px] h-[500px] md:h-[700px] bg-teal-500/5 rounded-full blur-[120px] md:blur-[140px]"
+          animate={{ 
+            x: [0, -60, 60, 0], 
+            y: [0, 80, -100, 0],
+            opacity: [0.2, 0.5, 0.2]
+          }}
+          transition={{ duration: 25, repeat: Infinity, ease: "easeInOut" }}
+          className="absolute bottom-[-15%] right-[-15%] w-[700px] md:w-[1000px] h-[700px] md:h-[1000px] bg-teal-600/15 rounded-full blur-[140px] md:blur-[180px]"
         />
+        
+        {/* Grid Pattern Overlay */}
+        <div className="absolute inset-0 opacity-[0.03] bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')] pointer-events-none" />
       </div>
 
-      <div className="relative z-10 w-full max-w-lg px-6 flex flex-col items-center text-center py-10 my-auto">
+      <div className="relative z-10 w-full max-w-xl px-6 flex flex-col items-center text-center py-10 my-auto">
         {step === 'select' ? (
           <MotionDiv
-            initial={{ opacity: 0, y: 20 }}
+            initial={{ opacity: 0, y: 40 }}
             animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, ease: "easeOut" }}
             className="w-full flex flex-col"
           >
-            <div className="mb-8 shrink-0">
-              <AppLogo size="md" animate={false} />
-              <h2 className="text-white text-3xl font-black uppercase tracking-tighter mt-8">Escolha sua Cidade</h2>
-              <p className="text-emerald-400/60 text-xs font-bold uppercase tracking-widest mt-2">Selecione para ver o guia local</p>
+            <div className="mb-10 shrink-0">
+              <MotionDiv
+                initial={{ scale: 0.8, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                transition={{ duration: 1, type: "spring", bounce: 0.4 }}
+              >
+                <AppLogo size="md" animate={false} />
+              </MotionDiv>
+              
+              <MotionDiv
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.4 }}
+                className="mt-10"
+              >
+                <h2 className="text-white text-4xl font-black uppercase tracking-tighter leading-none">
+                  Sua Cidade, <br/>
+                  <span className="text-emerald-500 italic">Seu Guia.</span>
+                </h2>
+                <p className="text-emerald-400/40 text-[10px] font-black uppercase tracking-[0.4em] mt-4">Selecione para começar</p>
+              </MotionDiv>
             </div>
             
-            <div className="grid grid-cols-1 gap-3 w-full max-h-[60vh] overflow-y-auto pr-2 custom-scrollbar pb-4">
-              {SUPPORTED_CITIES.map((city) => (
-                <button
+            <div className="grid grid-cols-1 gap-4 w-full max-h-[55vh] overflow-y-auto pr-2 custom-scrollbar pb-6 px-1">
+              {SUPPORTED_CITIES.map((city, idx) => (
+                <MotionDiv
                   key={city.id}
-                  onClick={() => handleCitySelect(city.id)}
-                  className="group relative w-full p-5 bg-white/5 hover:bg-emerald-500/20 border border-white/10 hover:border-emerald-500/50 rounded-2xl transition-all active:scale-[0.98] text-left flex items-center justify-between"
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: 0.5 + idx * 0.1 }}
                 >
-                  <div>
-                    <h3 className="text-white font-black uppercase tracking-widest text-sm">{city.name}</h3>
-                    <p className="text-emerald-500/40 text-[9px] font-black uppercase tracking-widest">{city.state}</p>
-                  </div>
-                  <div className="w-8 h-8 rounded-full bg-emerald-500/10 flex items-center justify-center text-emerald-500 group-hover:bg-emerald-500 group-hover:text-white transition-all">
-                    <ChevronRight size={16} />
-                  </div>
-                </button>
+                  <button
+                    onClick={() => handleCitySelect(city.id)}
+                    className="group relative w-full p-6 bg-white/5 hover:bg-emerald-500/10 backdrop-blur-md border border-white/10 hover:border-emerald-500/40 rounded-3xl transition-all active:scale-[0.97] text-left flex items-center justify-between overflow-hidden"
+                  >
+                    <div className="absolute inset-0 bg-gradient-to-r from-emerald-500/0 via-emerald-500/5 to-emerald-500/0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000" />
+                    
+                    <div className="relative z-10">
+                      <h3 className="text-white font-black uppercase tracking-widest text-base">{city.name}</h3>
+                      <p className="text-emerald-500/50 text-[10px] font-black uppercase tracking-widest mt-1">{city.state}</p>
+                    </div>
+                    
+                    <div className="relative z-10 w-10 h-10 rounded-2xl bg-emerald-500/10 flex items-center justify-center text-emerald-500 group-hover:bg-emerald-500 group-hover:text-white group-hover:rotate-12 transition-all duration-500 shadow-lg shadow-emerald-500/0 group-hover:shadow-emerald-500/20">
+                      <ChevronRight size={20} strokeWidth={3} />
+                    </div>
+                  </button>
+                </MotionDiv>
               ))}
             </div>
-            <p className="text-white/20 text-[9px] font-bold uppercase tracking-widest mt-6">Deslize para ver mais cidades</p>
             
-            <button 
-              onClick={() => {
-                onComplete();
-                navigate('/planos');
-              }}
-              className="mt-8 w-full py-5 bg-amber-500 text-white rounded-2xl font-black uppercase text-xs tracking-widest shadow-xl shadow-amber-500/20 active:scale-95 transition-all flex items-center justify-center gap-3"
+            <MotionDiv
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 1.2 }}
+              className="mt-6 flex flex-col items-center gap-6"
             >
-              <Star size={18} className="fill-white/20" />
-              Seja um Parceiro
-            </button>
+              <div className="flex items-center gap-3">
+                <div className="h-[1px] w-8 bg-white/10" />
+                <p className="text-white/20 text-[10px] font-bold uppercase tracking-widest">Role para ver mais</p>
+                <div className="h-[1px] w-8 bg-white/10" />
+              </div>
+
+              <button 
+                onClick={() => {
+                  onComplete();
+                  navigate('/planos');
+                }}
+                className="group relative w-full py-5 bg-gradient-to-r from-amber-500 to-orange-600 text-white rounded-[2rem] font-black uppercase text-xs tracking-[0.2em] shadow-2xl shadow-amber-600/30 active:scale-95 transition-all flex items-center justify-center gap-3 overflow-hidden"
+              >
+                <div className="absolute inset-0 bg-white/20 translate-y-[100%] group-hover:translate-y-0 transition-transform duration-500" />
+                <Star size={18} className="relative z-10 fill-white/30" />
+                <span className="relative z-10">Seja um Parceiro</span>
+              </button>
+            </MotionDiv>
           </MotionDiv>
         ) : (
-          <>
+          <div className="flex flex-col items-center">
             <MotionDiv
-              initial={{ opacity: 0, scale: 0.5 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 1, type: "spring" }}
-              className="perspective-[1000px]"
+              initial={{ opacity: 0, scale: 0.3, rotate: -15 }}
+              animate={{ opacity: 1, scale: 1, rotate: 0 }}
+              transition={{ 
+                duration: 1.2, 
+                type: "spring", 
+                bounce: 0.5,
+                ease: "easeOut"
+              }}
+              className="perspective-[1200px]"
             >
               <AppLogo size="lg" animate={true} />
             </MotionDiv>
             
             <MotionDiv 
-              initial={{ opacity: 0, y: 20 }}
+              initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.5 }}
-              className="mt-12 space-y-4"
+              transition={{ delay: 0.6, duration: 0.8 }}
+              className="mt-16 space-y-8 flex flex-col items-center"
             >
-              <h2 className="text-white text-2xl md:text-3xl font-black uppercase tracking-widest leading-tight">
-                {SUPPORTED_CITIES.find(c => c.id === selectedCity)?.name || 'Guia Digital'}
-              </h2>
-              <div className="flex items-center justify-center gap-3">
-                <div className="h-[2px] w-8 bg-emerald-500/40" />
-                <p className="text-emerald-400 text-[10px] md:text-xs font-black uppercase tracking-[0.5em]">Carregando Guia</p>
-                <div className="h-[2px] w-8 bg-emerald-500/40" />
+              <div className="relative group">
+                <MotionDiv
+                  initial={{ scale: 2, opacity: 0, filter: 'blur(20px)', skewX: -20 }}
+                  animate={{ scale: 1, opacity: 1, filter: 'blur(0px)', skewX: -10 }}
+                  transition={{ 
+                    duration: 0.8, 
+                    delay: 0.7,
+                    type: "spring",
+                    damping: 12,
+                    stiffness: 100
+                  }}
+                  className="relative"
+                >
+                  <h2 className="text-white text-5xl md:text-7xl font-black uppercase tracking-tighter leading-none text-center drop-shadow-[0_10px_20px_rgba(0,0,0,0.5)]">
+                    {SUPPORTED_CITIES.find(c => c.id === selectedCity)?.name || 'Guia Digital'}
+                  </h2>
+                </MotionDiv>
+                
+                <MotionDiv
+                  initial={{ scaleX: 0 }}
+                  animate={{ scaleX: 1 }}
+                  transition={{ delay: 1.2, duration: 1.2, ease: "circOut" }}
+                  className="absolute -bottom-4 left-0 right-0 h-1.5 bg-gradient-to-r from-transparent via-emerald-500 to-transparent origin-center shadow-[0_0_20px_rgba(16,185,129,0.5)]"
+                />
+              </div>
+
+              <div className="flex flex-col items-center gap-4">
+                <div className="flex items-center justify-center gap-4">
+                  <MotionDiv 
+                    animate={{ scale: [1, 1.5, 1], opacity: [0.3, 1, 0.3] }}
+                    transition={{ duration: 1.5, repeat: Infinity }}
+                    className="w-1.5 h-1.5 bg-emerald-500 rounded-full" 
+                  />
+                  <p className="text-emerald-400 text-[11px] md:text-sm font-black uppercase tracking-[0.6em] ml-2">Sincronizando</p>
+                  <MotionDiv 
+                    animate={{ scale: [1, 1.5, 1], opacity: [0.3, 1, 0.3] }}
+                    transition={{ duration: 1.5, repeat: Infinity, delay: 0.5 }}
+                    className="w-1.5 h-1.5 bg-emerald-500 rounded-full" 
+                  />
+                </div>
+                
+                {/* Modern Progress Bar */}
+                <div className="w-48 h-1 bg-white/5 rounded-full overflow-hidden relative">
+                  <MotionDiv
+                    initial={{ x: '-100%' }}
+                    animate={{ x: '100%' }}
+                    transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+                    className="absolute inset-0 bg-gradient-to-r from-transparent via-emerald-500 to-transparent"
+                  />
+                </div>
               </div>
             </MotionDiv>
 
-            <div className="absolute bottom-16 left-1/2 -translate-x-1/2">
-               <Loader2 className="animate-spin text-emerald-500/40" size={32} />
-            </div>
-          </>
+            <MotionDiv 
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 2 }}
+              className="absolute bottom-12 flex flex-col items-center gap-2"
+            >
+              <p className="text-white/10 text-[9px] font-black uppercase tracking-widest">Bernardino na Net © 2024</p>
+            </MotionDiv>
+          </div>
         )}
       </div>
     </MotionDiv>
