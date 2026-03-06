@@ -25,9 +25,17 @@ import { INITIAL_COMPANIES, INITIAL_OFFERS, INITIAL_ON_CALL, INITIAL_ADMIN_CONTA
 
 const MotionDiv = motion.div as any;
 
-const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL || 'https://xtpvdeqfqokkrdlhvrrx.supabase.co';
-const SUPABASE_ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY || 'sb_publishable_ZL1HhCHSh-0iVNA1dP37-w_KX27D-W-';
-const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL;
+const SUPABASE_ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY;
+
+if (!SUPABASE_URL || !SUPABASE_ANON_KEY) {
+  console.warn('Supabase credentials missing. Please check your environment variables.');
+}
+
+const supabase = createClient(
+  SUPABASE_URL || 'https://xtpvdeqfqokkrdlhvrrx.supabase.co', 
+  SUPABASE_ANON_KEY || 'sb_publishable_ZL1HhCHSh-0iVNA1dP37-w_KX27D-W-'
+);
 
 // --- Motion Configs ---
 const springTransition = { type: "spring", stiffness: 300, damping: 30 };
@@ -2700,7 +2708,7 @@ const App = () => {
         supabase.from('alerts').select('*').eq('city', selectedCity).order('created_at', { ascending: false }),
         supabase.from('on_call').select('*').eq('city', selectedCity).maybeSingle(),
         supabase.from('admin_settings').select('*').eq('city', selectedCity).maybeSingle(),
-        supabase.from('notifications').select('*').eq('city', selectedCity).order('createdAt', { ascending: false }),
+        supabase.from('notifications').select('*').eq('city', selectedCity).order('created_at', { ascending: false }),
         supabase.from('banners').select('*').or(`city.eq.${selectedCity},city.eq.all`).order('order_index')
       ]);
 
