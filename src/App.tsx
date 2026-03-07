@@ -190,13 +190,13 @@ const AppLogo = ({ size = "md", animate = false }: { size?: "sm" | "md" | "lg", 
   const isLarge = size === "lg";
   const isSmall = size === "sm";
   
-  const iconBoxSize = isLarge ? 'w-24 h-24 md:w-32 md:h-32' : isSmall ? 'w-10 h-10' : 'w-16 h-16 md:w-20 md:h-20';
-  const iconSize = isLarge ? 56 : isSmall ? 20 : 36;
-  const titleSize = isLarge ? 'text-5xl md:text-7xl' : isSmall ? 'text-xl' : 'text-3xl md:text-4xl';
-  const subSize = isLarge ? 'text-sm' : 'text-[10px] md:text-[11px]';
+  const iconBoxSize = isLarge ? 'w-20 h-20 md:w-32 md:h-32' : isSmall ? 'w-10 h-10' : 'w-14 h-14 md:w-20 md:h-20';
+  const iconSize = isLarge ? 48 : isSmall ? 20 : 32;
+  const titleSize = isLarge ? 'text-4xl md:text-7xl' : isSmall ? 'text-xl' : 'text-2xl md:text-4xl';
+  const subSize = isLarge ? 'text-[10px] md:text-sm' : 'text-[9px] md:text-[11px]';
 
   return (
-    <div className={`flex ${isLarge ? 'flex-col items-center text-center' : 'items-center text-left'} gap-6 md:gap-8 group select-none`}>
+    <div className={`flex ${isLarge ? 'flex-col items-center text-center' : 'items-center text-left'} gap-4 md:gap-8 group select-none`}>
       <div className={`relative ${iconBoxSize}`}>
         {/* Multi-layered Glow System */}
         <div className="absolute inset-0 rounded-[35%] rotate-12 opacity-40 blur-2xl bg-emerald-400 animate-pulse" />
@@ -672,7 +672,7 @@ const WelcomeScreen = ({ onComplete, selectedCity, onCitySelect }: { onComplete:
       initial={{ opacity: 1 }}
       exit={{ opacity: 0, scale: 1.1, filter: 'blur(40px)' }}
       transition={{ duration: 1.2, ease: [0.43, 0.13, 0.23, 0.96] }}
-      className="fixed inset-0 z-[3000] bg-[#ccff00] flex flex-col items-center justify-center overflow-hidden"
+      className="fixed inset-0 z-[3000] bg-[#ccff00] flex flex-col items-center overflow-y-auto overflow-x-hidden pt-10 pb-20 md:justify-center"
     >
       {/* Immersive Atmospheric Background (Recipe 7 Inspired) */}
       <div className="absolute inset-0 pointer-events-none overflow-hidden">
@@ -715,7 +715,7 @@ const WelcomeScreen = ({ onComplete, selectedCity, onCitySelect }: { onComplete:
             transition={{ duration: 1, ease: [0.22, 1, 0.36, 1] }}
             className="w-full flex flex-col"
           >
-            <div className="mb-12 shrink-0">
+            <div className="mb-8 md:mb-12 shrink-0">
               <MotionDiv
                 initial={{ scale: 0.7, opacity: 0, rotate: -10 }}
                 animate={{ scale: 1, opacity: 1, rotate: 0 }}
@@ -728,17 +728,17 @@ const WelcomeScreen = ({ onComplete, selectedCity, onCitySelect }: { onComplete:
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.6 }}
-                className="mt-12"
+                className="mt-8 md:mt-12"
               >
-                <h2 className="text-emerald-950 text-5xl md:text-7xl font-black uppercase tracking-tighter leading-[0.9]">
+                <h2 className="text-emerald-950 text-4xl md:text-7xl font-black uppercase tracking-tighter leading-[0.9]">
                   Sua Cidade, <br/>
                   <span className="text-emerald-700 italic drop-shadow-[0_0_20px_rgba(5,150,105,0.2)]">Seu Guia.</span>
                 </h2>
-                <p className="text-emerald-900/40 text-[11px] font-black uppercase tracking-[0.5em] mt-6">Selecione para começar</p>
+                <p className="text-emerald-900/40 text-[10px] md:text-[11px] font-black uppercase tracking-[0.5em] mt-4 md:mt-6">Selecione para começar</p>
               </MotionDiv>
             </div>
             
-            <div className="grid grid-cols-1 gap-5 w-full max-h-[50vh] overflow-y-auto pr-3 custom-scrollbar pb-8 px-2">
+            <div className="grid grid-cols-1 gap-3 md:gap-5 w-full max-h-[40vh] md:max-h-[50vh] overflow-y-auto pr-3 custom-scrollbar pb-4 md:pb-8 px-2">
               {SUPPORTED_CITIES.map((city, idx) => (
                 <MotionDiv
                   key={city.id}
@@ -810,7 +810,7 @@ const WelcomeScreen = ({ onComplete, selectedCity, onCitySelect }: { onComplete:
               initial={{ opacity: 0, y: 40 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.8, duration: 1 }}
-              className="mt-20 space-y-10 flex flex-col items-center"
+              className="mt-10 md:mt-20 space-y-6 md:space-y-10 flex flex-col items-center"
             >
               <div className="relative group">
                 <MotionDiv
@@ -825,7 +825,7 @@ const WelcomeScreen = ({ onComplete, selectedCity, onCitySelect }: { onComplete:
                   }}
                   className="relative"
                 >
-                  <h2 className="text-emerald-950 text-6xl md:text-8xl font-black uppercase tracking-tighter leading-none text-center drop-shadow-[0_15px_30px_rgba(0,0,0,0.1)]">
+                  <h2 className="text-emerald-950 text-4xl md:text-8xl font-black uppercase tracking-tighter leading-none text-center drop-shadow-[0_15px_30px_rgba(0,0,0,0.1)]">
                     {SUPPORTED_CITIES.find(c => c.id === selectedCity)?.name || 'Guia Digital'}
                   </h2>
                 </MotionDiv>
@@ -834,27 +834,27 @@ const WelcomeScreen = ({ onComplete, selectedCity, onCitySelect }: { onComplete:
                   initial={{ scaleX: 0 }}
                   animate={{ scaleX: 1 }}
                   transition={{ delay: 1.5, duration: 1.5, ease: "circOut" }}
-                  className="absolute -bottom-6 left-0 right-0 h-2 bg-gradient-to-r from-transparent via-emerald-600 to-transparent origin-center shadow-[0_0_30px_rgba(5,150,105,0.3)]"
+                  className="absolute -bottom-4 md:bottom-[-6px] left-0 right-0 h-1 md:h-2 bg-gradient-to-r from-transparent via-emerald-600 to-transparent origin-center shadow-[0_0_30px_rgba(5,150,105,0.3)]"
                 />
               </div>
 
-              <div className="flex flex-col items-center gap-6">
-                <div className="flex items-center justify-center gap-5">
+              <div className="flex flex-col items-center gap-4 md:gap-6">
+                <div className="flex items-center justify-center gap-3 md:gap-5">
                   <MotionDiv 
                     animate={{ scale: [1, 1.8, 1], opacity: [0.3, 1, 0.3] }}
                     transition={{ duration: 1.8, repeat: Infinity }}
-                    className="w-2 h-2 bg-emerald-600 rounded-full shadow-[0_0_10px_rgba(5,150,105,1)]" 
+                    className="w-1.5 h-1.5 md:w-2 md:h-2 bg-emerald-600 rounded-full shadow-[0_0_10px_rgba(5,150,105,1)]" 
                   />
-                  <p className="text-emerald-900 text-xs md:text-base font-black uppercase tracking-[0.7em] ml-3">Sincronizando Dados</p>
+                  <p className="text-emerald-900 text-[10px] md:text-base font-black uppercase tracking-[0.7em] ml-2 md:ml-3">Sincronizando Dados</p>
                   <MotionDiv 
                     animate={{ scale: [1, 1.8, 1], opacity: [0.3, 1, 0.3] }}
                     transition={{ duration: 1.8, repeat: Infinity, delay: 0.6 }}
-                    className="w-2 h-2 bg-emerald-600 rounded-full shadow-[0_0_10px_rgba(5,150,105,1)]" 
+                    className="w-1.5 h-1.5 md:w-2 md:h-2 bg-emerald-600 rounded-full shadow-[0_0_10px_rgba(5,150,105,1)]" 
                   />
                 </div>
                 
                 {/* Modern Progress Bar */}
-                <div className="w-64 h-1.5 bg-emerald-950/10 rounded-full overflow-hidden relative border border-emerald-950/5">
+                <div className="w-48 md:w-64 h-1 md:h-1.5 bg-emerald-950/10 rounded-full overflow-hidden relative border border-emerald-950/5">
                   <MotionDiv
                     initial={{ x: '-100%' }}
                     animate={{ x: '100%' }}
@@ -869,7 +869,7 @@ const WelcomeScreen = ({ onComplete, selectedCity, onCitySelect }: { onComplete:
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 2.5 }}
-              className="absolute bottom-12 flex flex-col items-center gap-3"
+              className="mt-12 md:absolute md:bottom-12 flex flex-col items-center gap-3"
             >
               <div className="flex items-center gap-3 opacity-20">
                 <div className="w-1 h-1 bg-emerald-950 rounded-full" />
