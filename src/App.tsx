@@ -160,6 +160,58 @@ const Toast = ({ message, type = 'success', onClose }: { message: string, type?:
 
 
 
+const BottomNav = ({ onOpenMenu, favoritesCount }: { onOpenMenu: () => void, favoritesCount: number }) => {
+  const location = useLocation();
+  const navigate = useNavigate();
+
+  const navItems = [
+    { icon: Home, label: 'Início', path: '/' },
+    { icon: Heart, label: 'Favoritos', path: '/favoritos', badge: favoritesCount },
+    { icon: HeartPulse, label: 'Plantão', path: '/plantao' },
+    { icon: Award, label: 'Planos', path: '/planos' },
+  ];
+
+  return (
+    <div className="md:hidden fixed bottom-0 left-0 right-0 z-[1500] bg-white/80 backdrop-blur-2xl border-t border-emerald-100 px-2 pb-safe">
+      <div className="flex items-center justify-around h-16 max-w-lg mx-auto">
+        {navItems.map((item) => {
+          const isActive = location.pathname === item.path;
+          return (
+            <button
+              key={item.path}
+              onClick={() => navigate(item.path)}
+              className={`relative flex flex-col items-center justify-center w-full h-full gap-1 transition-all active:scale-90 ${
+                isActive ? 'text-emerald-600' : 'text-emerald-950/40'
+              }`}
+            >
+              <div className={`p-1 rounded-xl transition-colors ${isActive ? 'bg-emerald-50' : ''}`}>
+                <item.icon size={20} strokeWidth={isActive ? 2.5 : 2} />
+              </div>
+              <span className={`text-[8px] font-black uppercase tracking-widest ${isActive ? 'opacity-100' : 'opacity-60'}`}>
+                {item.label}
+              </span>
+              {item.badge !== undefined && item.badge > 0 && (
+                <span className="absolute top-2 right-1/2 translate-x-4 w-4 h-4 bg-red-500 text-white text-[8px] font-black flex items-center justify-center rounded-full border-2 border-white shadow-sm">
+                  {item.badge}
+                </span>
+              )}
+            </button>
+          );
+        })}
+        <button
+          onClick={onOpenMenu}
+          className="flex flex-col items-center justify-center w-full h-full gap-1 text-emerald-950/40 active:scale-90 transition-all"
+        >
+          <div className="p-1 rounded-xl">
+            <MenuIcon size={20} />
+          </div>
+          <span className="text-[8px] font-black uppercase tracking-widest opacity-60">Menu</span>
+        </button>
+      </div>
+    </div>
+  );
+};
+
 const BackToTop = () => {
   const [visible, setVisible] = useState(false);
 
@@ -177,7 +229,7 @@ const BackToTop = () => {
           animate={{ opacity: 1, scale: 1, y: 0 }}
           exit={{ opacity: 0, scale: 0.5, y: 20 }}
           onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-          className="fixed bottom-24 left-6 md:bottom-12 md:left-12 z-[150] p-4 bg-emerald-600 text-white rounded-2xl shadow-2xl shadow-emerald-600/40 cursor-pointer active:scale-90 transition-all group"
+          className="fixed bottom-24 md:bottom-12 left-6 md:left-12 z-[150] p-4 bg-emerald-600 text-white rounded-2xl shadow-2xl shadow-emerald-600/40 cursor-pointer active:scale-90 transition-all group"
         >
           <ChevronRight size={24} className="-rotate-90 group-hover:-translate-y-1 transition-transform" />
         </MotionDiv>
@@ -2907,7 +2959,7 @@ const App = () => {
   }, [selectedCity]);
 
   return (
-    <div className={`min-h-screen flex flex-col bg-[#fafafa] font-sans pb-safe transition-colors duration-300`}>
+    <div className={`min-h-screen flex flex-col bg-[#fafafa] font-sans pb-20 md:pb-safe transition-colors duration-300`}>
       <AnimatePresence mode="wait">
         {(!selectedCity || showWelcome) && (
           <WelcomeScreen 
@@ -2966,6 +3018,13 @@ const App = () => {
       
       {!showWelcome && !isAdminPath && !isLoginPage && <BackToTop />}
       
+      {!showWelcome && !isAdminPath && !isLoginPage && (
+        <BottomNav 
+          onOpenMenu={() => setShowMenu(true)} 
+          favoritesCount={favorites.length} 
+        />
+      )}
+
       <AnimatePresence>
         {toast && <Toast message={toast.message} type={toast.type} onClose={() => setToast(null)} />}
       </AnimatePresence>
@@ -3009,20 +3068,19 @@ const App = () => {
           </div>
         </header>
       )}
-      {/* Botão Flutuante Seja Parceiro (Mobile/Desktop) */}
+      {/* Botão Flutuante Seja Parceiro (Desktop Only) */}
       {!showWelcome && !isAdminPath && !isLoginPage && (
         <MotionDiv
           initial={{ scale: 0, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
-          className="fixed bottom-24 right-6 md:bottom-12 md:right-12 z-[150]"
+          className="hidden md:block fixed bottom-12 right-12 z-[150]"
         >
           <button 
             onClick={() => navigate('/planos')}
             className="flex items-center gap-3 bg-amber-500 hover:bg-amber-600 text-white px-6 py-4 rounded-full shadow-2xl shadow-amber-500/40 font-black uppercase text-xs tracking-widest active:scale-95 transition-all group"
           >
             <Star size={20} className="group-hover:rotate-12 transition-transform fill-white/20" />
-            <span className="hidden sm:inline">Anuncie Aqui</span>
-            <span className="sm:hidden">Anunciar</span>
+            <span>Anuncie Aqui</span>
           </button>
         </MotionDiv>
       )}
