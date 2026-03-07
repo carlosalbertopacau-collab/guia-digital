@@ -190,10 +190,10 @@ const AppLogo = ({ size = "md", animate = false }: { size?: "sm" | "md" | "lg", 
   const isLarge = size === "lg";
   const isSmall = size === "sm";
   
-  const iconBoxSize = isLarge ? 'w-32 h-32 md:w-44 md:h-44' : isSmall ? 'w-10 h-10' : 'w-16 h-16 md:w-20 md:h-20';
-  const iconSize = isLarge ? 72 : isSmall ? 20 : 36;
-  const titleSize = isLarge ? 'text-6xl md:text-8xl' : isSmall ? 'text-xl' : 'text-3xl md:text-4xl';
-  const subSize = isLarge ? 'text-base' : 'text-[10px] md:text-[11px]';
+  const iconBoxSize = isLarge ? 'w-24 h-24 md:w-32 md:h-32' : isSmall ? 'w-10 h-10' : 'w-16 h-16 md:w-20 md:h-20';
+  const iconSize = isLarge ? 56 : isSmall ? 20 : 36;
+  const titleSize = isLarge ? 'text-5xl md:text-7xl' : isSmall ? 'text-xl' : 'text-3xl md:text-4xl';
+  const subSize = isLarge ? 'text-sm' : 'text-[10px] md:text-[11px]';
 
   return (
     <div className={`flex ${isLarge ? 'flex-col items-center text-center' : 'items-center text-left'} gap-6 md:gap-8 group select-none`}>
@@ -672,32 +672,32 @@ const WelcomeScreen = ({ onComplete, selectedCity, onCitySelect }: { onComplete:
       initial={{ opacity: 1 }}
       exit={{ opacity: 0, scale: 1.1, filter: 'blur(40px)' }}
       transition={{ duration: 1.2, ease: [0.43, 0.13, 0.23, 0.96] }}
-      className="fixed inset-0 z-[3000] bg-[#011c16] flex flex-col items-center justify-center overflow-hidden"
+      className="fixed inset-0 z-[3000] bg-[#ccff00] flex flex-col items-center justify-center overflow-hidden"
     >
       {/* Immersive Atmospheric Background (Recipe 7 Inspired) */}
       <div className="absolute inset-0 pointer-events-none overflow-hidden">
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_30%,_rgba(16,185,129,0.2)_0%,_transparent_60%)]" />
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_10%_80%,_rgba(16,185,129,0.15)_0%,_transparent_50%)]" />
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_30%,_rgba(16,185,129,0.3)_0%,_transparent_60%)]" />
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_10%_80%,_rgba(16,185,129,0.2)_0%,_transparent_50%)]" />
         
         <MotionDiv
           animate={{ 
             x: [0, 100, -100, 0], 
             y: [0, -120, 80, 0], 
             scale: [1, 1.4, 0.9, 1],
-            opacity: [0.2, 0.5, 0.2]
+            opacity: [0.3, 0.6, 0.3]
           }}
           transition={{ duration: 25, repeat: Infinity, ease: "easeInOut" }}
-          className="absolute top-[-20%] left-[-20%] w-[800px] md:w-[1200px] h-[800px] md:h-[1200px] bg-emerald-500/10 rounded-full blur-[150px] md:blur-[200px]"
+          className="absolute top-[-20%] left-[-20%] w-[800px] md:w-[1200px] h-[800px] md:h-[1200px] bg-white/40 rounded-full blur-[150px] md:blur-[200px]"
         />
         
         <MotionDiv
           animate={{ 
             x: [0, -80, 80, 0], 
             y: [0, 100, -120, 0],
-            opacity: [0.15, 0.4, 0.15]
+            opacity: [0.2, 0.5, 0.2]
           }}
           transition={{ duration: 30, repeat: Infinity, ease: "easeInOut" }}
-          className="absolute bottom-[-25%] right-[-25%] w-[900px] md:w-[1300px] h-[900px] md:h-[1300px] bg-teal-600/10 rounded-full blur-[180px] md:blur-[250px]"
+          className="absolute bottom-[-25%] right-[-25%] w-[900px] md:w-[1300px] h-[900px] md:h-[1300px] bg-emerald-400/30 rounded-full blur-[180px] md:blur-[250px]"
         />
         
         {/* Noise Texture Overlay for Modern Feel */}
@@ -730,11 +730,11 @@ const WelcomeScreen = ({ onComplete, selectedCity, onCitySelect }: { onComplete:
                 transition={{ delay: 0.6 }}
                 className="mt-12"
               >
-                <h2 className="text-white text-5xl md:text-7xl font-black uppercase tracking-tighter leading-[0.9]">
+                <h2 className="text-emerald-950 text-5xl md:text-7xl font-black uppercase tracking-tighter leading-[0.9]">
                   Sua Cidade, <br/>
-                  <span className="text-emerald-400 italic drop-shadow-[0_0_20px_rgba(52,211,153,0.3)]">Seu Guia.</span>
+                  <span className="text-emerald-700 italic drop-shadow-[0_0_20px_rgba(5,150,105,0.2)]">Seu Guia.</span>
                 </h2>
-                <p className="text-emerald-500/30 text-[11px] font-black uppercase tracking-[0.5em] mt-6">Selecione para começar</p>
+                <p className="text-emerald-900/40 text-[11px] font-black uppercase tracking-[0.5em] mt-6">Selecione para começar</p>
               </MotionDiv>
             </div>
             
@@ -748,16 +748,16 @@ const WelcomeScreen = ({ onComplete, selectedCity, onCitySelect }: { onComplete:
                 >
                   <button
                     onClick={() => handleCitySelect(city.id)}
-                    className="group relative w-full p-7 bg-white/[0.03] hover:bg-emerald-500/[0.08] backdrop-blur-xl border border-white/10 hover:border-emerald-500/50 rounded-[2rem] transition-all active:scale-[0.96] text-left flex items-center justify-between overflow-hidden shadow-2xl"
+                    className="group relative w-full p-7 bg-white/40 hover:bg-white/60 backdrop-blur-xl border border-white/20 hover:border-emerald-500/50 rounded-[2rem] transition-all active:scale-[0.96] text-left flex items-center justify-between overflow-hidden shadow-xl"
                   >
                     <div className="absolute inset-0 bg-gradient-to-r from-emerald-500/0 via-emerald-500/10 to-emerald-500/0 translate-x-[-150%] group-hover:translate-x-[150%] transition-transform duration-1500" />
                     
                     <div className="relative z-10">
-                      <h3 className="text-white font-black uppercase tracking-[0.15em] text-lg">{city.name}</h3>
-                      <p className="text-emerald-400/40 text-[10px] font-black uppercase tracking-widest mt-2">{city.state}</p>
+                      <h3 className="text-emerald-950 font-black uppercase tracking-[0.15em] text-lg">{city.name}</h3>
+                      <p className="text-emerald-700/60 text-[10px] font-black uppercase tracking-widest mt-2">{city.state}</p>
                     </div>
                     
-                    <div className="relative z-10 w-12 h-12 rounded-2xl bg-emerald-500/10 flex items-center justify-center text-emerald-400 group-hover:bg-emerald-500 group-hover:text-white group-hover:rotate-[15deg] transition-all duration-700 shadow-xl shadow-emerald-500/0 group-hover:shadow-emerald-500/30">
+                    <div className="relative z-10 w-12 h-12 rounded-2xl bg-emerald-500/10 flex items-center justify-center text-emerald-600 group-hover:bg-emerald-600 group-hover:text-white group-hover:rotate-[15deg] transition-all duration-700 shadow-xl shadow-emerald-500/0 group-hover:shadow-emerald-500/30">
                       <ChevronRight size={24} strokeWidth={3} />
                     </div>
                   </button>
@@ -772,9 +772,9 @@ const WelcomeScreen = ({ onComplete, selectedCity, onCitySelect }: { onComplete:
               className="mt-8 flex flex-col items-center gap-8"
             >
               <div className="flex items-center gap-4">
-                <div className="h-[1px] w-12 bg-white/10" />
-                <p className="text-white/20 text-[11px] font-bold uppercase tracking-[0.3em]">Explore o Comércio Local</p>
-                <div className="h-[1px] w-12 bg-white/10" />
+                <div className="h-[1px] w-12 bg-emerald-950/10" />
+                <p className="text-emerald-950/40 text-[11px] font-bold uppercase tracking-[0.3em]">Explore o Comércio Local</p>
+                <div className="h-[1px] w-12 bg-emerald-950/10" />
               </div>
 
               <button 
@@ -825,7 +825,7 @@ const WelcomeScreen = ({ onComplete, selectedCity, onCitySelect }: { onComplete:
                   }}
                   className="relative"
                 >
-                  <h2 className="text-white text-6xl md:text-8xl font-black uppercase tracking-tighter leading-none text-center drop-shadow-[0_15px_30px_rgba(0,0,0,0.6)]">
+                  <h2 className="text-emerald-950 text-6xl md:text-8xl font-black uppercase tracking-tighter leading-none text-center drop-shadow-[0_15px_30px_rgba(0,0,0,0.1)]">
                     {SUPPORTED_CITIES.find(c => c.id === selectedCity)?.name || 'Guia Digital'}
                   </h2>
                 </MotionDiv>
@@ -834,7 +834,7 @@ const WelcomeScreen = ({ onComplete, selectedCity, onCitySelect }: { onComplete:
                   initial={{ scaleX: 0 }}
                   animate={{ scaleX: 1 }}
                   transition={{ delay: 1.5, duration: 1.5, ease: "circOut" }}
-                  className="absolute -bottom-6 left-0 right-0 h-2 bg-gradient-to-r from-transparent via-emerald-400 to-transparent origin-center shadow-[0_0_30px_rgba(52,211,153,0.6)]"
+                  className="absolute -bottom-6 left-0 right-0 h-2 bg-gradient-to-r from-transparent via-emerald-600 to-transparent origin-center shadow-[0_0_30px_rgba(5,150,105,0.3)]"
                 />
               </div>
 
@@ -843,23 +843,23 @@ const WelcomeScreen = ({ onComplete, selectedCity, onCitySelect }: { onComplete:
                   <MotionDiv 
                     animate={{ scale: [1, 1.8, 1], opacity: [0.3, 1, 0.3] }}
                     transition={{ duration: 1.8, repeat: Infinity }}
-                    className="w-2 h-2 bg-emerald-400 rounded-full shadow-[0_0_10px_rgba(52,211,153,1)]" 
+                    className="w-2 h-2 bg-emerald-600 rounded-full shadow-[0_0_10px_rgba(5,150,105,1)]" 
                   />
-                  <p className="text-emerald-300 text-xs md:text-base font-black uppercase tracking-[0.7em] ml-3">Sincronizando Dados</p>
+                  <p className="text-emerald-900 text-xs md:text-base font-black uppercase tracking-[0.7em] ml-3">Sincronizando Dados</p>
                   <MotionDiv 
                     animate={{ scale: [1, 1.8, 1], opacity: [0.3, 1, 0.3] }}
                     transition={{ duration: 1.8, repeat: Infinity, delay: 0.6 }}
-                    className="w-2 h-2 bg-emerald-400 rounded-full shadow-[0_0_10px_rgba(52,211,153,1)]" 
+                    className="w-2 h-2 bg-emerald-600 rounded-full shadow-[0_0_10px_rgba(5,150,105,1)]" 
                   />
                 </div>
                 
                 {/* Modern Progress Bar */}
-                <div className="w-64 h-1.5 bg-white/5 rounded-full overflow-hidden relative border border-white/5">
+                <div className="w-64 h-1.5 bg-emerald-950/10 rounded-full overflow-hidden relative border border-emerald-950/5">
                   <MotionDiv
                     initial={{ x: '-100%' }}
                     animate={{ x: '100%' }}
                     transition={{ duration: 2.5, repeat: Infinity, ease: "easeInOut" }}
-                    className="absolute inset-0 bg-gradient-to-r from-transparent via-emerald-400 to-transparent"
+                    className="absolute inset-0 bg-gradient-to-r from-transparent via-emerald-600 to-transparent"
                   />
                 </div>
               </div>
@@ -872,11 +872,11 @@ const WelcomeScreen = ({ onComplete, selectedCity, onCitySelect }: { onComplete:
               className="absolute bottom-12 flex flex-col items-center gap-3"
             >
               <div className="flex items-center gap-3 opacity-20">
-                <div className="w-1 h-1 bg-white rounded-full" />
-                <div className="w-1 h-1 bg-white rounded-full" />
-                <div className="w-1 h-1 bg-white rounded-full" />
+                <div className="w-1 h-1 bg-emerald-950 rounded-full" />
+                <div className="w-1 h-1 bg-emerald-950 rounded-full" />
+                <div className="w-1 h-1 bg-emerald-950 rounded-full" />
               </div>
-              <p className="text-white/10 text-[10px] font-black uppercase tracking-[0.4em]">Bernardino na Net • v1.2.0</p>
+              <p className="text-emerald-950/20 text-[10px] font-black uppercase tracking-[0.4em]">Bernardino na Net • v1.2.1</p>
             </MotionDiv>
           </div>
         )}
