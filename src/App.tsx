@@ -190,67 +190,70 @@ const AppLogo = ({ size = "md", animate = false }: { size?: "sm" | "md" | "lg", 
   const isLarge = size === "lg";
   const isSmall = size === "sm";
   
-  const iconBoxSize = isLarge ? 'w-28 h-28 md:w-36 md:h-36' : isSmall ? 'w-10 h-10' : 'w-14 h-14 md:w-16 md:h-16';
-  const iconSize = isLarge ? 64 : isSmall ? 20 : 32;
-  const titleSize = isLarge ? 'text-5xl md:text-7xl' : isSmall ? 'text-xl' : 'text-2xl md:text-3xl';
-  const subSize = isLarge ? 'text-sm' : 'text-[9px] md:text-[10px]';
+  const iconBoxSize = isLarge ? 'w-32 h-32 md:w-44 md:h-44' : isSmall ? 'w-10 h-10' : 'w-16 h-16 md:w-20 md:h-20';
+  const iconSize = isLarge ? 72 : isSmall ? 20 : 36;
+  const titleSize = isLarge ? 'text-6xl md:text-8xl' : isSmall ? 'text-xl' : 'text-3xl md:text-4xl';
+  const subSize = isLarge ? 'text-base' : 'text-[10px] md:text-[11px]';
 
   return (
-    <div className={`flex ${isLarge ? 'flex-col items-center text-center' : 'items-center text-left'} gap-4 md:gap-6 group select-none`}>
+    <div className={`flex ${isLarge ? 'flex-col items-center text-center' : 'items-center text-left'} gap-6 md:gap-8 group select-none`}>
       <div className={`relative ${iconBoxSize}`}>
-        {/* Outer Glow */}
-        <div className={`absolute inset-0 rounded-[32%] rotate-6 opacity-30 blur-xl transition-all duration-700 group-hover:rotate-12 group-hover:scale-110 bg-emerald-500`} />
-        <div className={`absolute inset-0 rounded-[32%] -rotate-3 opacity-20 blur-2xl transition-all duration-700 group-hover:-rotate-6 group-hover:scale-125 bg-teal-400`} />
+        {/* Multi-layered Glow System */}
+        <div className="absolute inset-0 rounded-[35%] rotate-12 opacity-40 blur-2xl bg-emerald-400 animate-pulse" />
+        <div className="absolute inset-0 rounded-[35%] -rotate-6 opacity-30 blur-3xl bg-teal-300" />
         
         <MotionDiv 
           animate={animate ? { 
             rotateY: [0, 360],
-            y: [0, -10, 0]
+            y: [0, -15, 0],
+            scale: [1, 1.05, 1]
           } : {}}
           transition={animate ? { 
-            rotateY: { duration: 6, repeat: Infinity, ease: "linear" },
-            y: { duration: 4, repeat: Infinity, ease: "easeInOut" }
+            rotateY: { duration: 8, repeat: Infinity, ease: "linear" },
+            y: { duration: 5, repeat: Infinity, ease: "easeInOut" },
+            scale: { duration: 4, repeat: Infinity, ease: "easeInOut" }
           } : {}}
-          className={`relative h-full w-full rounded-[32%] flex items-center justify-center shadow-2xl transition-all duration-500 overflow-hidden border-b-8 bg-gradient-to-br from-emerald-500 via-emerald-600 to-teal-700 border-emerald-900/40 shadow-emerald-900/40`}
+          className="relative h-full w-full rounded-[35%] flex items-center justify-center shadow-[0_20px_50px_rgba(6,78,59,0.3)] transition-all duration-700 overflow-hidden border-b-[10px] bg-gradient-to-br from-emerald-400 via-emerald-600 to-teal-800 border-emerald-900/50"
         >
-          {/* Glass Shine */}
-          <div className="absolute top-0 left-0 w-full h-1/2 bg-white/20 -skew-y-12 transform -translate-y-4" />
+          {/* Advanced Glass Reflections */}
+          <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-tr from-white/20 via-transparent to-transparent opacity-50" />
+          <div className="absolute -top-1/2 -left-1/2 w-full h-full bg-white/10 rounded-full blur-3xl" />
           
           <div className="relative z-10 flex flex-col items-center">
-            <MapPinned size={iconSize} strokeWidth={2.5} className="text-white drop-shadow-[0_4px_8px_rgba(0,0,0,0.3)]" />
+            <MapPinned size={iconSize} strokeWidth={2.5} className="text-white drop-shadow-[0_8px_16px_rgba(0,0,0,0.4)]" />
             <MotionDiv 
-              animate={{ opacity: [0.4, 1, 0.4], scale: [1, 1.2, 1] }}
-              transition={{ duration: 2, repeat: Infinity }}
-              className="absolute -top-2 -right-2 w-3 h-3 md:w-4 md:h-4 bg-emerald-300 rounded-full border-2 border-emerald-600 shadow-[0_0_15px_rgba(110,231,183,1)]"
+              animate={{ opacity: [0.5, 1, 0.5], scale: [1, 1.3, 1] }}
+              transition={{ duration: 2.5, repeat: Infinity }}
+              className="absolute -top-3 -right-3 w-4 h-4 md:w-6 md:h-6 bg-emerald-300 rounded-full border-2 border-emerald-600 shadow-[0_0_20px_rgba(110,231,183,1)]"
             />
           </div>
 
-          {/* Inner Light Sweep */}
+          {/* Dynamic Light Sweep */}
           <MotionDiv 
-            animate={{ x: ['-150%', '150%'] }}
-            transition={{ duration: 3, repeat: Infinity, ease: "easeInOut", repeatDelay: 1 }}
-            className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent skew-x-12"
+            animate={{ x: ['-200%', '200%'] }}
+            transition={{ duration: 4, repeat: Infinity, ease: "easeInOut", repeatDelay: 1.5 }}
+            className="absolute inset-0 bg-gradient-to-r from-transparent via-white/40 to-transparent skew-x-[35deg]"
           />
         </MotionDiv>
       </div>
 
       <div className="flex flex-col">
-        <h1 className={`${titleSize} font-black uppercase tracking-tighter leading-[0.85] flex items-center gap-2`}>
-          <span className="text-emerald-950 drop-shadow-sm">Guia</span>
-          <span className="relative text-emerald-600 drop-shadow-md italic">
+        <h1 className={`${titleSize} font-black uppercase tracking-tighter leading-[0.8] flex items-center gap-3`}>
+          <span className="text-emerald-950 dark:text-white drop-shadow-xl">Guia</span>
+          <span className="relative text-emerald-500 drop-shadow-2xl italic">
             Digital
             <MotionDiv 
               initial={{ x: '-100%' }}
-              animate={{ x: '200%' }}
-              transition={{ duration: 4, repeat: Infinity, ease: "linear" }}
-              className="absolute inset-0 bg-gradient-to-r from-transparent via-white/50 to-transparent skew-x-12 pointer-events-none"
+              animate={{ x: '250%' }}
+              transition={{ duration: 5, repeat: Infinity, ease: "linear" }}
+              className="absolute inset-0 bg-gradient-to-r from-transparent via-white/60 to-transparent skew-x-12 pointer-events-none"
             />
           </span>
         </h1>
-        <div className={`flex items-center ${isLarge ? 'justify-center' : 'justify-start'} gap-2 mt-1`}>
-          <div className="h-[1px] w-4 bg-emerald-600/30" />
-          <p className={`${subSize} font-bold uppercase tracking-[0.3em] text-emerald-800/60`}>O Melhor da Cidade</p>
-          <div className="h-[1px] w-4 bg-emerald-600/30" />
+        <div className={`flex items-center ${isLarge ? 'justify-center' : 'justify-start'} gap-3 mt-3`}>
+          <div className="h-[2px] w-6 bg-emerald-500/40" />
+          <p className={`${subSize} font-black uppercase tracking-[0.4em] text-emerald-600/80 dark:text-emerald-400/60`}>O Melhor da Cidade</p>
+          <div className="h-[2px] w-6 bg-emerald-500/40" />
         </div>
       </div>
     </div>
@@ -654,7 +657,7 @@ const WelcomeScreen = ({ onComplete, selectedCity, onCitySelect }: { onComplete:
     if (step === 'splash') {
       const timer = setTimeout(() => {
         onComplete();
-      }, 3500);
+      }, 3800);
       return () => clearTimeout(timer);
     }
   }, [onComplete, step]);
@@ -667,89 +670,95 @@ const WelcomeScreen = ({ onComplete, selectedCity, onCitySelect }: { onComplete:
   return (
     <MotionDiv
       initial={{ opacity: 1 }}
-      exit={{ opacity: 0, scale: 1.05, filter: 'blur(30px)' }}
-      transition={{ duration: 1, ease: [0.43, 0.13, 0.23, 0.96] }}
-      className="fixed inset-0 z-[3000] bg-[#022c22] flex flex-col items-center justify-center overflow-hidden"
+      exit={{ opacity: 0, scale: 1.1, filter: 'blur(40px)' }}
+      transition={{ duration: 1.2, ease: [0.43, 0.13, 0.23, 0.96] }}
+      className="fixed inset-0 z-[3000] bg-[#011c16] flex flex-col items-center justify-center overflow-hidden"
     >
-      {/* Immersive Background */}
+      {/* Immersive Atmospheric Background (Recipe 7 Inspired) */}
       <div className="absolute inset-0 pointer-events-none overflow-hidden">
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,_rgba(16,185,129,0.15)_0%,_transparent_70%)]" />
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_30%,_rgba(16,185,129,0.2)_0%,_transparent_60%)]" />
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_10%_80%,_rgba(16,185,129,0.15)_0%,_transparent_50%)]" />
+        
         <MotionDiv
           animate={{ 
-            x: [0, 80, -80, 0], 
-            y: [0, -100, 60, 0], 
-            scale: [1, 1.3, 0.8, 1],
-            opacity: [0.3, 0.6, 0.3]
-          }}
-          transition={{ duration: 20, repeat: Infinity, ease: "easeInOut" }}
-          className="absolute top-[-10%] left-[-10%] w-[600px] md:w-[900px] h-[600px] md:h-[900px] bg-emerald-500/20 rounded-full blur-[120px] md:blur-[160px]"
-        />
-        <MotionDiv
-          animate={{ 
-            x: [0, -60, 60, 0], 
-            y: [0, 80, -100, 0],
+            x: [0, 100, -100, 0], 
+            y: [0, -120, 80, 0], 
+            scale: [1, 1.4, 0.9, 1],
             opacity: [0.2, 0.5, 0.2]
           }}
           transition={{ duration: 25, repeat: Infinity, ease: "easeInOut" }}
-          className="absolute bottom-[-15%] right-[-15%] w-[700px] md:w-[1000px] h-[700px] md:h-[1000px] bg-teal-600/15 rounded-full blur-[140px] md:blur-[180px]"
+          className="absolute top-[-20%] left-[-20%] w-[800px] md:w-[1200px] h-[800px] md:h-[1200px] bg-emerald-500/10 rounded-full blur-[150px] md:blur-[200px]"
         />
         
-        {/* Grid Pattern Overlay */}
-        <div className="absolute inset-0 opacity-[0.03] bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')] pointer-events-none" />
+        <MotionDiv
+          animate={{ 
+            x: [0, -80, 80, 0], 
+            y: [0, 100, -120, 0],
+            opacity: [0.15, 0.4, 0.15]
+          }}
+          transition={{ duration: 30, repeat: Infinity, ease: "easeInOut" }}
+          className="absolute bottom-[-25%] right-[-25%] w-[900px] md:w-[1300px] h-[900px] md:h-[1300px] bg-teal-600/10 rounded-full blur-[180px] md:blur-[250px]"
+        />
+        
+        {/* Noise Texture Overlay for Modern Feel */}
+        <div className="absolute inset-0 opacity-[0.02] bg-[url('https://www.transparenttextures.com/patterns/stardust.png')] pointer-events-none" />
+        
+        {/* Scanline Effect */}
+        <div className="absolute inset-0 bg-[linear-gradient(rgba(18,16,16,0)_50%,rgba(0,0,0,0.1)_50%),linear-gradient(90deg,rgba(255,0,0,0.02),rgba(0,255,0,0.01),rgba(0,0,255,0.02))] bg-[length:100%_2px,3px_100%] pointer-events-none opacity-20" />
       </div>
 
-      <div className="relative z-10 w-full max-w-xl px-6 flex flex-col items-center text-center py-10 my-auto">
+      <div className="relative z-10 w-full max-w-2xl px-6 flex flex-col items-center text-center py-10 my-auto">
         {step === 'select' ? (
           <MotionDiv
-            initial={{ opacity: 0, y: 40 }}
+            initial={{ opacity: 0, y: 50 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, ease: "easeOut" }}
+            transition={{ duration: 1, ease: [0.22, 1, 0.36, 1] }}
             className="w-full flex flex-col"
           >
-            <div className="mb-10 shrink-0">
+            <div className="mb-12 shrink-0">
               <MotionDiv
-                initial={{ scale: 0.8, opacity: 0 }}
-                animate={{ scale: 1, opacity: 1 }}
-                transition={{ duration: 1, type: "spring", bounce: 0.4 }}
+                initial={{ scale: 0.7, opacity: 0, rotate: -10 }}
+                animate={{ scale: 1, opacity: 1, rotate: 0 }}
+                transition={{ duration: 1.2, type: "spring", bounce: 0.4 }}
               >
                 <AppLogo size="md" animate={false} />
               </MotionDiv>
               
               <MotionDiv
-                initial={{ opacity: 0, y: 10 }}
+                initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.4 }}
-                className="mt-10"
+                transition={{ delay: 0.6 }}
+                className="mt-12"
               >
-                <h2 className="text-white text-4xl font-black uppercase tracking-tighter leading-none">
+                <h2 className="text-white text-5xl md:text-7xl font-black uppercase tracking-tighter leading-[0.9]">
                   Sua Cidade, <br/>
-                  <span className="text-emerald-500 italic">Seu Guia.</span>
+                  <span className="text-emerald-400 italic drop-shadow-[0_0_20px_rgba(52,211,153,0.3)]">Seu Guia.</span>
                 </h2>
-                <p className="text-emerald-400/40 text-[10px] font-black uppercase tracking-[0.4em] mt-4">Selecione para começar</p>
+                <p className="text-emerald-500/30 text-[11px] font-black uppercase tracking-[0.5em] mt-6">Selecione para começar</p>
               </MotionDiv>
             </div>
             
-            <div className="grid grid-cols-1 gap-4 w-full max-h-[55vh] overflow-y-auto pr-2 custom-scrollbar pb-6 px-1">
+            <div className="grid grid-cols-1 gap-5 w-full max-h-[50vh] overflow-y-auto pr-3 custom-scrollbar pb-8 px-2">
               {SUPPORTED_CITIES.map((city, idx) => (
                 <MotionDiv
                   key={city.id}
-                  initial={{ opacity: 0, x: -20 }}
+                  initial={{ opacity: 0, x: -30 }}
                   animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: 0.5 + idx * 0.1 }}
+                  transition={{ delay: 0.7 + idx * 0.12, ease: "easeOut" }}
                 >
                   <button
                     onClick={() => handleCitySelect(city.id)}
-                    className="group relative w-full p-6 bg-white/5 hover:bg-emerald-500/10 backdrop-blur-md border border-white/10 hover:border-emerald-500/40 rounded-3xl transition-all active:scale-[0.97] text-left flex items-center justify-between overflow-hidden"
+                    className="group relative w-full p-7 bg-white/[0.03] hover:bg-emerald-500/[0.08] backdrop-blur-xl border border-white/10 hover:border-emerald-500/50 rounded-[2rem] transition-all active:scale-[0.96] text-left flex items-center justify-between overflow-hidden shadow-2xl"
                   >
-                    <div className="absolute inset-0 bg-gradient-to-r from-emerald-500/0 via-emerald-500/5 to-emerald-500/0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000" />
+                    <div className="absolute inset-0 bg-gradient-to-r from-emerald-500/0 via-emerald-500/10 to-emerald-500/0 translate-x-[-150%] group-hover:translate-x-[150%] transition-transform duration-1500" />
                     
                     <div className="relative z-10">
-                      <h3 className="text-white font-black uppercase tracking-widest text-base">{city.name}</h3>
-                      <p className="text-emerald-500/50 text-[10px] font-black uppercase tracking-widest mt-1">{city.state}</p>
+                      <h3 className="text-white font-black uppercase tracking-[0.15em] text-lg">{city.name}</h3>
+                      <p className="text-emerald-400/40 text-[10px] font-black uppercase tracking-widest mt-2">{city.state}</p>
                     </div>
                     
-                    <div className="relative z-10 w-10 h-10 rounded-2xl bg-emerald-500/10 flex items-center justify-center text-emerald-500 group-hover:bg-emerald-500 group-hover:text-white group-hover:rotate-12 transition-all duration-500 shadow-lg shadow-emerald-500/0 group-hover:shadow-emerald-500/20">
-                      <ChevronRight size={20} strokeWidth={3} />
+                    <div className="relative z-10 w-12 h-12 rounded-2xl bg-emerald-500/10 flex items-center justify-center text-emerald-400 group-hover:bg-emerald-500 group-hover:text-white group-hover:rotate-[15deg] transition-all duration-700 shadow-xl shadow-emerald-500/0 group-hover:shadow-emerald-500/30">
+                      <ChevronRight size={24} strokeWidth={3} />
                     </div>
                   </button>
                 </MotionDiv>
@@ -759,13 +768,13 @@ const WelcomeScreen = ({ onComplete, selectedCity, onCitySelect }: { onComplete:
             <MotionDiv
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
-              transition={{ delay: 1.2 }}
-              className="mt-6 flex flex-col items-center gap-6"
+              transition={{ delay: 1.5 }}
+              className="mt-8 flex flex-col items-center gap-8"
             >
-              <div className="flex items-center gap-3">
-                <div className="h-[1px] w-8 bg-white/10" />
-                <p className="text-white/20 text-[10px] font-bold uppercase tracking-widest">Role para ver mais</p>
-                <div className="h-[1px] w-8 bg-white/10" />
+              <div className="flex items-center gap-4">
+                <div className="h-[1px] w-12 bg-white/10" />
+                <p className="text-white/20 text-[11px] font-bold uppercase tracking-[0.3em]">Explore o Comércio Local</p>
+                <div className="h-[1px] w-12 bg-white/10" />
               </div>
 
               <button 
@@ -773,10 +782,10 @@ const WelcomeScreen = ({ onComplete, selectedCity, onCitySelect }: { onComplete:
                   onComplete();
                   navigate('/planos');
                 }}
-                className="group relative w-full py-5 bg-gradient-to-r from-amber-500 to-orange-600 text-white rounded-[2rem] font-black uppercase text-xs tracking-[0.2em] shadow-2xl shadow-amber-600/30 active:scale-95 transition-all flex items-center justify-center gap-3 overflow-hidden"
+                className="group relative w-full py-6 bg-gradient-to-br from-amber-400 via-orange-500 to-red-600 text-white rounded-[2.5rem] font-black uppercase text-xs tracking-[0.25em] shadow-[0_20px_40px_rgba(245,158,11,0.2)] active:scale-95 transition-all flex items-center justify-center gap-4 overflow-hidden"
               >
-                <div className="absolute inset-0 bg-white/20 translate-y-[100%] group-hover:translate-y-0 transition-transform duration-500" />
-                <Star size={18} className="relative z-10 fill-white/30" />
+                <div className="absolute inset-0 bg-white/20 translate-y-[100%] group-hover:translate-y-0 transition-transform duration-700" />
+                <Star size={20} className="relative z-10 fill-white/30" />
                 <span className="relative z-10">Seja um Parceiro</span>
               </button>
             </MotionDiv>
@@ -784,39 +793,39 @@ const WelcomeScreen = ({ onComplete, selectedCity, onCitySelect }: { onComplete:
         ) : (
           <div className="flex flex-col items-center">
             <MotionDiv
-              initial={{ opacity: 0, scale: 0.3, rotate: -15 }}
-              animate={{ opacity: 1, scale: 1, rotate: 0 }}
+              initial={{ opacity: 0, scale: 0.2, rotate: -30, y: 50 }}
+              animate={{ opacity: 1, scale: 1, rotate: 0, y: 0 }}
               transition={{ 
-                duration: 1.2, 
+                duration: 1.5, 
                 type: "spring", 
-                bounce: 0.5,
+                bounce: 0.4,
                 ease: "easeOut"
               }}
-              className="perspective-[1200px]"
+              className="perspective-[1500px]"
             >
               <AppLogo size="lg" animate={true} />
             </MotionDiv>
             
             <MotionDiv 
-              initial={{ opacity: 0, y: 30 }}
+              initial={{ opacity: 0, y: 40 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.6, duration: 0.8 }}
-              className="mt-16 space-y-8 flex flex-col items-center"
+              transition={{ delay: 0.8, duration: 1 }}
+              className="mt-20 space-y-10 flex flex-col items-center"
             >
               <div className="relative group">
                 <MotionDiv
-                  initial={{ scale: 2, opacity: 0, filter: 'blur(20px)', skewX: -20 }}
-                  animate={{ scale: 1, opacity: 1, filter: 'blur(0px)', skewX: -10 }}
+                  initial={{ scale: 3, opacity: 0, filter: 'blur(30px)', skewX: -30 }}
+                  animate={{ scale: 1, opacity: 1, filter: 'blur(0px)', skewX: -12 }}
                   transition={{ 
-                    duration: 0.8, 
-                    delay: 0.7,
+                    duration: 1, 
+                    delay: 0.9,
                     type: "spring",
-                    damping: 12,
-                    stiffness: 100
+                    damping: 10,
+                    stiffness: 80
                   }}
                   className="relative"
                 >
-                  <h2 className="text-white text-5xl md:text-7xl font-black uppercase tracking-tighter leading-none text-center drop-shadow-[0_10px_20px_rgba(0,0,0,0.5)]">
+                  <h2 className="text-white text-6xl md:text-8xl font-black uppercase tracking-tighter leading-none text-center drop-shadow-[0_15px_30px_rgba(0,0,0,0.6)]">
                     {SUPPORTED_CITIES.find(c => c.id === selectedCity)?.name || 'Guia Digital'}
                   </h2>
                 </MotionDiv>
@@ -824,33 +833,33 @@ const WelcomeScreen = ({ onComplete, selectedCity, onCitySelect }: { onComplete:
                 <MotionDiv
                   initial={{ scaleX: 0 }}
                   animate={{ scaleX: 1 }}
-                  transition={{ delay: 1.2, duration: 1.2, ease: "circOut" }}
-                  className="absolute -bottom-4 left-0 right-0 h-1.5 bg-gradient-to-r from-transparent via-emerald-500 to-transparent origin-center shadow-[0_0_20px_rgba(16,185,129,0.5)]"
+                  transition={{ delay: 1.5, duration: 1.5, ease: "circOut" }}
+                  className="absolute -bottom-6 left-0 right-0 h-2 bg-gradient-to-r from-transparent via-emerald-400 to-transparent origin-center shadow-[0_0_30px_rgba(52,211,153,0.6)]"
                 />
               </div>
 
-              <div className="flex flex-col items-center gap-4">
-                <div className="flex items-center justify-center gap-4">
+              <div className="flex flex-col items-center gap-6">
+                <div className="flex items-center justify-center gap-5">
                   <MotionDiv 
-                    animate={{ scale: [1, 1.5, 1], opacity: [0.3, 1, 0.3] }}
-                    transition={{ duration: 1.5, repeat: Infinity }}
-                    className="w-1.5 h-1.5 bg-emerald-500 rounded-full" 
+                    animate={{ scale: [1, 1.8, 1], opacity: [0.3, 1, 0.3] }}
+                    transition={{ duration: 1.8, repeat: Infinity }}
+                    className="w-2 h-2 bg-emerald-400 rounded-full shadow-[0_0_10px_rgba(52,211,153,1)]" 
                   />
-                  <p className="text-emerald-400 text-[11px] md:text-sm font-black uppercase tracking-[0.6em] ml-2">Sincronizando</p>
+                  <p className="text-emerald-300 text-xs md:text-base font-black uppercase tracking-[0.7em] ml-3">Sincronizando Dados</p>
                   <MotionDiv 
-                    animate={{ scale: [1, 1.5, 1], opacity: [0.3, 1, 0.3] }}
-                    transition={{ duration: 1.5, repeat: Infinity, delay: 0.5 }}
-                    className="w-1.5 h-1.5 bg-emerald-500 rounded-full" 
+                    animate={{ scale: [1, 1.8, 1], opacity: [0.3, 1, 0.3] }}
+                    transition={{ duration: 1.8, repeat: Infinity, delay: 0.6 }}
+                    className="w-2 h-2 bg-emerald-400 rounded-full shadow-[0_0_10px_rgba(52,211,153,1)]" 
                   />
                 </div>
                 
                 {/* Modern Progress Bar */}
-                <div className="w-48 h-1 bg-white/5 rounded-full overflow-hidden relative">
+                <div className="w-64 h-1.5 bg-white/5 rounded-full overflow-hidden relative border border-white/5">
                   <MotionDiv
                     initial={{ x: '-100%' }}
                     animate={{ x: '100%' }}
-                    transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
-                    className="absolute inset-0 bg-gradient-to-r from-transparent via-emerald-500 to-transparent"
+                    transition={{ duration: 2.5, repeat: Infinity, ease: "easeInOut" }}
+                    className="absolute inset-0 bg-gradient-to-r from-transparent via-emerald-400 to-transparent"
                   />
                 </div>
               </div>
@@ -859,10 +868,15 @@ const WelcomeScreen = ({ onComplete, selectedCity, onCitySelect }: { onComplete:
             <MotionDiv 
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
-              transition={{ delay: 2 }}
-              className="absolute bottom-12 flex flex-col items-center gap-2"
+              transition={{ delay: 2.5 }}
+              className="absolute bottom-12 flex flex-col items-center gap-3"
             >
-              <p className="text-white/10 text-[9px] font-black uppercase tracking-widest">Bernardino na Net © 2024</p>
+              <div className="flex items-center gap-3 opacity-20">
+                <div className="w-1 h-1 bg-white rounded-full" />
+                <div className="w-1 h-1 bg-white rounded-full" />
+                <div className="w-1 h-1 bg-white rounded-full" />
+              </div>
+              <p className="text-white/10 text-[10px] font-black uppercase tracking-[0.4em]">Bernardino na Net • v1.2.0</p>
             </MotionDiv>
           </div>
         )}

@@ -1,5 +1,5 @@
 {
   "name": "Guia Digital Regional",
-  "description": "Um guia comercial completo para diversas cidades da região, permitindo busca de empresas, filtros por categoria e gestão administrativa.",
-  "requestFramePermissions": []
+  "description": "O guia comercial mais completo da sua região. Encontre empresas, farmácias de plantão, promoções e serviços locais com facilidade. Suporte a múltiplas cidades e notificações em tempo real.",
+  "requestFramePermissions": ["geolocation", "notifications"]
 }
