@@ -1276,9 +1276,18 @@ const HomePage = ({ companies, alerts, banners, favorites, toggleFavorite, curre
                 <Share size={18} />
               </button>
             </div>
-              <div className="w-full aspect-square bg-white rounded-[1.5rem] md:rounded-[2rem] mb-5 md:mb-6 flex items-center justify-center border border-emerald-50 group-hover:border-emerald-200 shadow-inner transition-all overflow-hidden relative">
-                <img src={company.logo} alt={company.name} className="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-500 relative z-10" loading="lazy" />
-              </div>
+              {company.logo ? (
+                <div className="w-full aspect-square bg-white rounded-[1.5rem] md:rounded-[2rem] mb-5 md:mb-6 flex items-center justify-center border border-emerald-50 group-hover:border-emerald-200 shadow-inner transition-all overflow-hidden relative">
+                  <img src={company.logo} alt={company.name} className="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-500 relative z-10" loading="lazy" />
+                </div>
+              ) : (
+                <div className="w-full aspect-square bg-emerald-50/30 dark:bg-emerald-900/10 rounded-[1.5rem] md:rounded-[2rem] mb-5 md:mb-6 flex flex-col items-center justify-center border border-dashed border-emerald-100 dark:border-emerald-800/50 group-hover:border-emerald-200 transition-all">
+                  <div className="w-12 h-12 rounded-2xl bg-white dark:bg-emerald-800 flex items-center justify-center text-emerald-200 dark:text-emerald-700 mb-2">
+                    <MapPinned size={24} />
+                  </div>
+                  <span className="text-[8px] font-black uppercase tracking-widest text-emerald-950/20 dark:text-emerald-100/10">Plano Básico</span>
+                </div>
+              )}
               <div className="space-y-1.5 md:space-y-2 text-left">
                 <span className="text-[7px] md:text-[8px] font-black uppercase text-emerald-500 tracking-[0.2em]">{company.category}</span>
                 <h3 className="text-lg md:text-xl font-black text-emerald-950 dark:text-emerald-50 uppercase truncate leading-tight">{company.name}</h3>
@@ -1317,10 +1326,12 @@ const DetailsPage = ({ companies, favorites, toggleFavorite, onShare }: any) => 
       </button>
 
       <div className="bg-white border border-emerald-50 rounded-[2.5rem] overflow-hidden shadow-2xl">
-        <div className="aspect-video bg-gray-100 flex items-center justify-center relative overflow-hidden">
-          <img src={company.logo} alt={company.name} className="absolute inset-0 w-full h-full object-cover blur-2xl opacity-30 scale-110" />
-          <img src={company.logo} alt={company.name} className="max-w-full max-h-full object-contain relative z-10 p-8 md:p-12" />
-        </div>
+        {company.logo && (
+          <div className="aspect-video bg-gray-100 flex items-center justify-center relative overflow-hidden">
+            <img src={company.logo} alt={company.name} className="absolute inset-0 w-full h-full object-cover blur-2xl opacity-30 scale-110" />
+            <img src={company.logo} alt={company.name} className="max-w-full max-h-full object-contain relative z-10 p-8 md:p-12" />
+          </div>
+        )}
 
         <div className="p-8 md:p-12">
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-10">
@@ -1394,23 +1405,25 @@ const DetailsPage = ({ companies, favorites, toggleFavorite, onShare }: any) => 
             <div className="space-y-6">
               <h3 className="text-[10px] font-black uppercase tracking-widest text-emerald-950/30 dark:text-emerald-100/20 mb-4">Canais de Contato</h3>
               
-              <a 
-                href={getWhatsAppLink(company.phone)} 
-                target="_blank" 
-                rel="noopener noreferrer"
-                className="flex items-center justify-between p-6 bg-emerald-600 text-white rounded-3xl shadow-xl shadow-emerald-600/20 hover:scale-[1.02] active:scale-95 transition-all group"
-              >
-                <div className="flex items-center gap-4">
-                  <div className="w-12 h-12 rounded-2xl bg-white/20 flex items-center justify-center">
-                    <MessageCircle size={24} />
+              {company.social?.whatsapp && (
+                <a 
+                  href={getWhatsAppLink(company.phone)} 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="flex items-center justify-between p-6 bg-emerald-600 text-white rounded-3xl shadow-xl shadow-emerald-600/20 hover:scale-[1.02] active:scale-95 transition-all group"
+                >
+                  <div className="flex items-center gap-4">
+                    <div className="w-12 h-12 rounded-2xl bg-white/20 flex items-center justify-center">
+                      <MessageCircle size={24} />
+                    </div>
+                    <div className="text-left">
+                      <span className="block text-[10px] font-black uppercase tracking-widest opacity-70 mb-1">WhatsApp</span>
+                      <span className="block text-sm font-black uppercase tracking-widest">Conversar Agora</span>
+                    </div>
                   </div>
-                  <div className="text-left">
-                    <span className="block text-[10px] font-black uppercase tracking-widest opacity-70 mb-1">WhatsApp</span>
-                    <span className="block text-sm font-black uppercase tracking-widest">Conversar Agora</span>
-                  </div>
-                </div>
-                <ChevronRight size={20} className="opacity-40 group-hover:translate-x-1 transition-transform" />
-              </a>
+                  <ChevronRight size={20} className="opacity-40 group-hover:translate-x-1 transition-transform" />
+                </a>
+              )}
 
               <a 
                 href={`tel:${company.phone}`} 
@@ -2153,7 +2166,7 @@ const AdminDashboard = ({ companies, alerts, settings, notifications, onCall, ba
     if (!confirm(`Deseja aprovar "${reg.company_name}" e publicar no guia?`)) return;
     setLoading(true);
     try {
-      // 1. Inserir na tabela companies
+      // 1. Inserir na tabela companies com todos os campos necessários
       const { error: insertError } = await supabase
         .from('companies')
         .insert([{
@@ -2162,11 +2175,20 @@ const AdminDashboard = ({ companies, alerts, settings, notifications, onCall, ba
           phone: reg.phone,
           category: reg.category,
           address: reg.address,
-          logo: 'https://picsum.photos/seed/business/400/400', // Logo padrão
-          is_featured: false
+          description: 'Cadastro básico gratuito.',
+          logo: '', // Sem imagem no plano grátis
+          is_featured: false,
+          social: {
+            whatsapp: '', // Sem link de WhatsApp no plano grátis
+            instagram: '',
+            facebook: ''
+          }
         }]);
       
-      if (insertError) throw insertError;
+      if (insertError) {
+        console.error('Erro ao inserir empresa:', insertError);
+        throw insertError;
+      }
 
       // 2. Atualizar status para approved
       const { error: updateError } = await supabase
@@ -2174,13 +2196,17 @@ const AdminDashboard = ({ companies, alerts, settings, notifications, onCall, ba
         .update({ status: 'approved' })
         .eq('id', reg.id);
       
-      if (updateError) throw updateError;
+      if (updateError) {
+        console.error('Erro ao atualizar solicitação:', updateError);
+        throw updateError;
+      }
 
       showToast('Empresa aprovada e publicada com sucesso!');
       fetchFreeRegistrations();
-      onRefresh();
+      if (onRefresh) onRefresh();
     } catch (err: any) {
-      showToast('Erro ao aprovar: ' + err.message, 'error');
+      console.error('Erro completo na aprovação:', err);
+      showToast('Erro ao aprovar: ' + (err.message || 'Erro desconhecido'), 'error');
     } finally {
       setLoading(false);
     }
