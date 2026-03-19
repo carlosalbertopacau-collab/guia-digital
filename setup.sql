@@ -11,6 +11,7 @@ CREATE TABLE IF NOT EXISTS companies (
   address TEXT,
   logo TEXT,
   description TEXT,
+  plan TEXT DEFAULT 'paid',
   is_featured BOOLEAN DEFAULT false,
   social JSONB DEFAULT '{"whatsapp": "", "instagram": "", "facebook": ""}'::jsonb,
   created_at TIMESTAMPTZ DEFAULT now()

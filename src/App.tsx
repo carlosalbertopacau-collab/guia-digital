@@ -1254,7 +1254,7 @@ const HomePage = ({ companies, alerts, banners, favorites, toggleFavorite, curre
               key={company.id} 
               whileHover={{ y: -8 }}
               onClick={() => navigate(`/empresa/${company.id}`)}
-              className="group bg-gradient-to-br from-white to-emerald-50/30 dark:from-emerald-900/20 dark:to-emerald-950/40 border border-emerald-100/50 dark:border-emerald-800/50 p-5 md:p-6 rounded-[2rem] md:rounded-[2.5rem] cursor-pointer shadow-sm hover:shadow-2xl hover:from-emerald-50/50 hover:to-white dark:hover:from-emerald-800/20 dark:hover:to-emerald-900/40 active:scale-[0.98] transition-all relative"
+              className={`group bg-gradient-to-br from-white to-emerald-50/30 dark:from-emerald-900/20 dark:to-emerald-950/40 border border-emerald-100/50 dark:border-emerald-800/50 p-5 md:p-6 rounded-[2rem] md:rounded-[2.5rem] cursor-pointer shadow-sm hover:shadow-2xl hover:from-emerald-50/50 hover:to-white dark:hover:from-emerald-800/20 dark:hover:to-emerald-900/40 active:scale-[0.98] transition-all relative ${!company.logo ? 'flex flex-col justify-center min-h-[180px]' : ''}`}
             >
             <div className="absolute top-4 right-4 z-10 flex flex-col gap-2">
               <button 
@@ -1276,21 +1276,26 @@ const HomePage = ({ companies, alerts, banners, favorites, toggleFavorite, curre
                 <Share size={18} />
               </button>
             </div>
-              {company.logo ? (
+              {company.logo && company.plan !== 'free' ? (
                 <div className="w-full aspect-square bg-white rounded-[1.5rem] md:rounded-[2rem] mb-5 md:mb-6 flex items-center justify-center border border-emerald-50 group-hover:border-emerald-200 shadow-inner transition-all overflow-hidden relative">
                   <img src={company.logo} alt={company.name} className="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-500 relative z-10" loading="lazy" />
                 </div>
               ) : (
-                <div className="w-full aspect-square bg-emerald-50/30 dark:bg-emerald-900/10 rounded-[1.5rem] md:rounded-[2rem] mb-5 md:mb-6 flex flex-col items-center justify-center border border-dashed border-emerald-100 dark:border-emerald-800/50 group-hover:border-emerald-200 transition-all">
-                  <div className="w-12 h-12 rounded-2xl bg-white dark:bg-emerald-800 flex items-center justify-center text-emerald-200 dark:text-emerald-700 mb-2">
-                    <MapPinned size={24} />
-                  </div>
-                  <span className="text-[8px] font-black uppercase tracking-widest text-emerald-950/20 dark:text-emerald-100/10">Plano Básico</span>
+                <div className="mb-4">
+                  <span className="px-2 py-1 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 text-[8px] font-black uppercase tracking-widest rounded-md">Plano Básico</span>
                 </div>
               )}
               <div className="space-y-1.5 md:space-y-2 text-left">
                 <span className="text-[7px] md:text-[8px] font-black uppercase text-emerald-500 tracking-[0.2em]">{company.category}</span>
                 <h3 className="text-lg md:text-xl font-black text-emerald-950 dark:text-emerald-50 uppercase truncate leading-tight">{company.name}</h3>
+                
+                {!company.logo && (
+                  <div className="flex items-start gap-2 pt-1">
+                    <MapPin size={12} className="text-emerald-950/20 dark:text-emerald-100/10 shrink-0 mt-0.5" />
+                    <p className="text-[10px] font-bold text-emerald-950/40 dark:text-emerald-100/20 uppercase tracking-tight line-clamp-2">{company.address}</p>
+                  </div>
+                )}
+
                 <div className="flex items-center gap-2 pt-1 md:pt-2">
                   <div className="w-7 h-7 md:w-8 md:h-8 rounded-full bg-emerald-50 dark:bg-emerald-800 flex items-center justify-center text-emerald-600 dark:text-emerald-400">
                     <Phone size={12} className="md:w-3.5 md:h-3.5" />
@@ -1326,7 +1331,7 @@ const DetailsPage = ({ companies, favorites, toggleFavorite, onShare }: any) => 
       </button>
 
       <div className="bg-white border border-emerald-50 rounded-[2.5rem] overflow-hidden shadow-2xl">
-        {company.logo && (
+        {company.logo && company.plan !== 'free' && (
           <div className="aspect-video bg-gray-100 flex items-center justify-center relative overflow-hidden">
             <img src={company.logo} alt={company.name} className="absolute inset-0 w-full h-full object-cover blur-2xl opacity-30 scale-110" />
             <img src={company.logo} alt={company.name} className="max-w-full max-h-full object-contain relative z-10 p-8 md:p-12" />
@@ -1405,7 +1410,7 @@ const DetailsPage = ({ companies, favorites, toggleFavorite, onShare }: any) => 
             <div className="space-y-6">
               <h3 className="text-[10px] font-black uppercase tracking-widest text-emerald-950/30 dark:text-emerald-100/20 mb-4">Canais de Contato</h3>
               
-              {company.social?.whatsapp && (
+              {company.social?.whatsapp && company.plan !== 'free' && (
                 <a 
                   href={getWhatsAppLink(company.phone)} 
                   target="_blank" 
@@ -1501,7 +1506,7 @@ const FavoritesPage = ({ companies, favorites, toggleFavorite }: any) => {
               key={company.id} 
               whileHover={{ y: -8 }}
               onClick={() => navigate(`/empresa/${company.id}`)}
-              className="group bg-white dark:bg-emerald-900/20 border border-emerald-100 dark:border-emerald-800 p-6 rounded-[2.5rem] cursor-pointer shadow-sm hover:shadow-2xl transition-all relative"
+              className={`group bg-white dark:bg-emerald-900/20 border border-emerald-100 dark:border-emerald-800 p-6 rounded-[2.5rem] cursor-pointer shadow-sm hover:shadow-2xl transition-all relative ${!company.logo ? 'flex flex-col justify-center min-h-[180px]' : ''}`}
             >
               <button 
                 onClick={(e) => {
@@ -1512,12 +1517,26 @@ const FavoritesPage = ({ companies, favorites, toggleFavorite }: any) => {
               >
                 <Heart size={18} className="fill-white" />
               </button>
-              <div className="w-full aspect-square bg-emerald-50 dark:bg-emerald-950/50 rounded-[2rem] mb-6 flex items-center justify-center p-6 border border-emerald-50 dark:border-emerald-800/50 group-hover:border-emerald-200 transition-all overflow-hidden">
-                <img src={company.logo} alt={company.name} className="max-w-[85%] max-h-[85%] object-contain mix-blend-multiply dark:mix-blend-normal transform group-hover:scale-110 transition-transform duration-500" />
-              </div>
+              {company.logo ? (
+                <div className="w-full aspect-square bg-emerald-50 dark:bg-emerald-950/50 rounded-[2rem] mb-6 flex items-center justify-center p-6 border border-emerald-50 dark:border-emerald-800/50 group-hover:border-emerald-200 transition-all overflow-hidden">
+                  <img src={company.logo} alt={company.name} className="max-w-[85%] max-h-[85%] object-contain mix-blend-multiply dark:mix-blend-normal transform group-hover:scale-110 transition-transform duration-500" />
+                </div>
+              ) : (
+                <div className="mb-4">
+                  <span className="px-2 py-1 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 text-[8px] font-black uppercase tracking-widest rounded-md">Plano Básico</span>
+                </div>
+              )}
               <div className="space-y-2 text-left">
                 <span className="text-[8px] font-black uppercase text-emerald-500 tracking-[0.2em]">{company.category}</span>
                 <h3 className="text-xl font-black text-emerald-950 dark:text-emerald-50 uppercase truncate">{company.name}</h3>
+                
+                {!company.logo && (
+                  <div className="flex items-start gap-2 pt-1">
+                    <MapPin size={12} className="text-emerald-950/20 dark:text-emerald-100/10 shrink-0 mt-0.5" />
+                    <p className="text-[10px] font-bold text-emerald-950/40 dark:text-emerald-100/20 uppercase tracking-tight line-clamp-2">{company.address}</p>
+                  </div>
+                )}
+
                 <div className="flex items-center gap-2 pt-2">
                   <Phone size={14} className="text-emerald-400" />
                   <span className="text-xs font-bold text-emerald-900/40 dark:text-emerald-100/30">{company.phone}</span>
@@ -1907,6 +1926,7 @@ const AdminModal = ({ type, item, onClose, onSave, currentCity }: { type: 'compa
           description: formData.get('description'),
           address: formData.get('address'),
           logo: logo,
+          plan: formData.get('plan'),
           is_featured: formData.get('isFeatured') === 'on',
           city: formData.get('city') || currentCity,
           social: {
@@ -2026,9 +2046,21 @@ const AdminModal = ({ type, item, onClose, onSave, currentCity }: { type: 'compa
                 <label className="text-[10px] font-black uppercase tracking-widest text-emerald-950/40 dark:text-emerald-100/20 ml-4">Endereço</label>
                 <input type="text" name="address" defaultValue={item?.address} className="w-full bg-emerald-50/50 dark:bg-emerald-950/50 border border-emerald-50 dark:border-emerald-800 rounded-2xl py-4 px-6 outline-none focus:ring-4 ring-emerald-500/10 text-emerald-950 dark:text-emerald-50 font-bold transition-all" />
               </div>
-              <div className="flex items-center gap-4 p-4 bg-emerald-50/50 dark:bg-emerald-950/50 rounded-2xl border border-emerald-50 dark:border-emerald-800">
-                <input type="checkbox" name="isFeatured" defaultChecked={item?.isFeatured} className="w-6 h-6 rounded-lg accent-emerald-600" />
-                <span className="text-xs font-black uppercase tracking-widest text-emerald-950 dark:text-emerald-50">Destaque na Página Inicial</span>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="space-y-2">
+                  <label className="text-[10px] font-black uppercase tracking-widest text-emerald-950/40 dark:text-emerald-100/20 ml-4">Plano</label>
+                  <select name="plan" defaultValue={item?.plan || 'paid'} className="w-full bg-emerald-50/50 dark:bg-emerald-950/50 border border-emerald-50 dark:border-emerald-800 rounded-2xl py-4 px-6 outline-none focus:ring-4 ring-emerald-500/10 text-emerald-950 dark:text-emerald-50 font-bold transition-all appearance-none">
+                    <option value="free">Grátis (Básico)</option>
+                    <option value="paid">Premium (Pago)</option>
+                  </select>
+                </div>
+                <div className="space-y-2">
+                  <label className="text-[10px] font-black uppercase tracking-widest text-emerald-950/40 dark:text-emerald-100/20 ml-4">Destaque na Página Inicial</label>
+                  <div className="flex items-center gap-4 h-[60px] bg-emerald-50/50 dark:bg-emerald-950/50 rounded-2xl border border-emerald-50 dark:border-emerald-800 px-6">
+                    <input type="checkbox" name="isFeatured" defaultChecked={item?.isFeatured} className="w-6 h-6 rounded-lg accent-emerald-600" />
+                    <span className="text-xs font-black uppercase tracking-widest text-emerald-950 dark:text-emerald-50">Ativo</span>
+                  </div>
+                </div>
               </div>
             </>
           )}
@@ -2163,7 +2195,7 @@ const AdminDashboard = ({ companies, alerts, settings, notifications, onCall, ba
   };
 
   const handleApprove = async (reg: any) => {
-    if (!confirm(`Deseja aprovar "${reg.company_name}" e publicar no guia?`)) return;
+    if (!window.confirm(`Deseja aprovar "${reg.company_name}" e publicar no guia?`)) return;
     setLoading(true);
     try {
       // 1. Inserir na tabela companies com todos os campos necessários
@@ -2177,6 +2209,7 @@ const AdminDashboard = ({ companies, alerts, settings, notifications, onCall, ba
           address: reg.address,
           description: 'Cadastro básico gratuito.',
           logo: '', // Sem imagem no plano grátis
+          plan: 'free',
           is_featured: false,
           social: {
             whatsapp: '', // Sem link de WhatsApp no plano grátis
@@ -2213,7 +2246,7 @@ const AdminDashboard = ({ companies, alerts, settings, notifications, onCall, ba
   };
 
   const handleReject = async (id: string) => {
-    if (!confirm('Deseja recusar esta solicitação?')) return;
+    if (!window.confirm('Deseja recusar esta solicitação?')) return;
     setLoading(true);
     try {
       const { error } = await supabase
@@ -2491,10 +2524,19 @@ const AdminDashboard = ({ companies, alerts, settings, notifications, onCall, ba
                 <div key={company.id} className="flex items-center justify-between p-6 bg-emerald-50/50 dark:bg-emerald-950/50 rounded-2xl border border-emerald-50 dark:border-emerald-800 group hover:border-emerald-200 transition-all">
                   <div className="flex items-center gap-6">
                     <div className="w-16 h-16 bg-white dark:bg-emerald-900 rounded-xl flex items-center justify-center p-3 border border-emerald-50 dark:border-emerald-800">
-                      <img src={company.logo} alt="" className="max-w-full max-h-full object-contain" />
+                      {company.logo && company.plan !== 'free' ? (
+                        <img src={company.logo} alt="" className="max-w-full max-h-full object-contain" />
+                      ) : (
+                        <MapPinned size={24} className="text-emerald-200 dark:text-emerald-700" />
+                      )}
                     </div>
                     <div className="text-left">
-                      <span className="text-[8px] font-black uppercase text-emerald-500 tracking-widest">{company.category}</span>
+                      <div className="flex items-center gap-2">
+                        <span className="text-[8px] font-black uppercase text-emerald-500 tracking-widest">{company.category}</span>
+                        <span className={`text-[7px] font-black uppercase px-2 py-0.5 rounded-full ${company.plan === 'free' ? 'bg-emerald-100 text-emerald-600' : 'bg-amber-100 text-amber-600'}`}>
+                          {company.plan === 'free' ? 'Grátis' : 'Premium'}
+                        </span>
+                      </div>
                       <h4 className="text-lg font-black uppercase text-emerald-950 dark:text-emerald-50">{company.name}</h4>
                     </div>
                   </div>
@@ -2896,14 +2938,30 @@ const App = () => {
   };
 
   const handleDelete = async (table: string, id: string) => {
-    if (!confirm('Tem certeza que deseja excluir este item?')) return;
+    // Usando confirm do navegador por enquanto, mas garantindo que o erro seja capturado e exibido via toast se disponível
+    if (!window.confirm('Tem certeza que deseja excluir este item?')) return;
+    
     setIsRefreshing(true);
     try {
+      console.log(`Tentando excluir item ${id} da tabela ${table}...`);
       const { error } = await supabase.from(table).delete().eq('id', id);
-      if (error) throw error;
+      if (error) {
+        console.error('Erro retornado pelo Supabase:', error);
+        throw error;
+      }
+      
+      if (showToast) {
+        showToast('Item excluído com sucesso!');
+      }
       fetchData();
     } catch (err: any) {
-      alert('Erro ao excluir: ' + err.message);
+      console.error('Erro ao excluir:', err);
+      const errorMessage = err.message || 'Erro desconhecido ao excluir';
+      if (showToast) {
+        showToast('Erro ao excluir: ' + errorMessage, 'error');
+      } else {
+        alert('Erro ao excluir: ' + errorMessage);
+      }
     } finally {
       setIsRefreshing(false);
     }
@@ -2971,6 +3029,12 @@ const App = () => {
     if (selectedCity) {
       fetchData();
     }
+    
+    // Obter sessão inicial
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setUser(session?.user ?? null);
+    });
+
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_e: any, session: any) => {
       setUser(session?.user ?? null);
     });
